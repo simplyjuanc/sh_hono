@@ -1,11 +1,15 @@
 import { serve } from "@hono/node-server";
-import { Hono } from "hono";
+import { OpenAPIHono } from "@hono/zod-openapi";
 
-const app = new Hono();
+import notFoundHandler from "./not-found.js";
+
+const app = new OpenAPIHono();
 
 app.get("/", (c) => {
   return c.text("Hello Hono!");
 });
+
+app.notFound(notFoundHandler);
 
 serve({
   fetch: app.fetch,
