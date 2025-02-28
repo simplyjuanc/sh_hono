@@ -1,7 +1,8 @@
 import { serve } from "@hono/node-server";
 import { OpenAPIHono } from "@hono/zod-openapi";
 
-import notFoundHandler from "./not-found.js";
+import notFoundHandler from "@/not-found.js";
+import onError from "@/on-error.js";
 
 const app = new OpenAPIHono();
 
@@ -10,6 +11,7 @@ app.get("/", (c) => {
 });
 
 app.notFound(notFoundHandler);
+app.onError(onError);
 
 serve({
   fetch: app.fetch,
