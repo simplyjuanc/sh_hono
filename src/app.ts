@@ -1,4 +1,4 @@
-import { createOpenAPIApp } from "@/utils/app-utils.js";
+import { createOpenAPIApp, registerApiRoutes } from "@/utils/app-utils.js";
 
 import collectionRouter from "./router/collection/collection.index.js";
 import healthRouter from "./router/index.routes.js";
@@ -12,8 +12,6 @@ const routes = [
   collectionRouter,
 ];
 
-routes.forEach((route) => {
-  app.route("/", route);
-});
+registerApiRoutes(app, routes);
 
 export default app;

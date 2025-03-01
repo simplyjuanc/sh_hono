@@ -3,7 +3,7 @@ import type { Hook } from "@hono/zod-openapi";
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { StatusCodes } from "http-status-codes";
 
-import type { AppBindings } from "@/types.js";
+import type { AppBindings, OpenApiApp } from "@/types.js";
 
 import { errorHandler, logger, notFoundHandler, serveFavicon } from "@/middleware/index.js";
 
@@ -32,5 +32,12 @@ const defaultHook: Hook<any, any, any, any> = (result, c) => {
 export function createRouter() {
   return new OpenAPIHono<AppBindings>({
     defaultHook,
+  });
+}
+
+const API_VERSION = "v1";
+export function registerApiRoutes(app: OpenApiApp, routes: OpenApiApp[]) {
+  routes.forEach((route) => {
+    app.route(`/${API_VERSION}`, route);
   });
 }
