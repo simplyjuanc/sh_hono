@@ -1,5 +1,4 @@
-import configureOpenAPI from "@/utils/configure-open-api.js";
-import createOpenAPIApp from "@/utils/create-app.js";
+import { configureOpenAPI, createOpenAPIApp } from "@/utils/app-utils.js";
 
 const app = createOpenAPIApp();
 configureOpenAPI(app);
