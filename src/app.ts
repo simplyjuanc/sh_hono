@@ -1,3 +1,5 @@
+import type { PinoLogger } from "hono-pino";
+
 import { OpenAPIHono } from "@hono/zod-openapi";
 
 import notFoundHandler from "@/not-found.js";
@@ -5,9 +7,15 @@ import onError from "@/on-error.js";
 
 import logger from "./pino-logger.js";
 
-const app = new OpenAPIHono();
+interface AppBindings {
+  Variables: {
+    logger: PinoLogger;
+  };
+}
 
-app.use(logger);
+const app = new OpenAPIHono<AppBindings>();
+
+app.use(logger());
 app.notFound(notFoundHandler);
 app.onError(onError);
 

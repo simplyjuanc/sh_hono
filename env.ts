@@ -5,17 +5,14 @@ import { config } from "dotenv";
 import { expand } from "dotenv-expand";
 import { z, ZodError } from "zod";
 
+const NodeEnv = z.enum(["localhost", "dev", "staging", "production"]);
+const LogLevel = z.enum(["trace", "debug", "info", "warn", "error", "fatal"]);
+
 const EnvSchema = z.object({
-  NODE_ENV: z
-    .union([
-      z.literal("localhost"),
-      z.literal("dev"),
-      z.literal("staging"),
-      z.literal("production"),
-    ])
-    .default("dev"),
+  NODE_ENV: NodeEnv.default("dev"),
   HOST: z.string().default("127.0.0.1"),
   PORT: z.string().default("3000"),
+  LOG_LEVEL: LogLevel.default("info"),
 });
 
 export type EnvSchema = z.infer<typeof EnvSchema>;
