@@ -1,20 +1,7 @@
-import type { PinoLogger } from "hono-pino";
+import configureOpenAPI from "@/utils/configure-open-api.js";
+import createOpenAPIApp from "@/utils/create-app.js";
 
-import { OpenAPIHono } from "@hono/zod-openapi";
-
-import { errorHandler, logger, notFoundHandler, serveFavicon } from "@/middleware/index.js";
-
-interface AppBindings {
-  Variables: {
-    logger: PinoLogger;
-  };
-}
-
-const app = new OpenAPIHono<AppBindings>();
-
-app.use(serveFavicon("🚀"));
-app.use(logger());
-app.notFound(notFoundHandler);
-app.onError(errorHandler);
+const app = createOpenAPIApp();
+configureOpenAPI(app);
 
 export default app;
