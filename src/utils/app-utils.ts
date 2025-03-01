@@ -1,6 +1,9 @@
-import { OpenAPIHono } from "@hono/zod-openapi";
+import type { Hook } from "@hono/zod-openapi";
 
-import type { AppBindings, OpenApiApp } from "@/types.js";
+import { OpenAPIHono } from "@hono/zod-openapi";
+import { StatusCodes } from "http-status-codes";
+
+import type { AppBindings } from "@/types.js";
 
 import { errorHandler, logger, notFoundHandler, serveFavicon } from "@/middleware/index.js";
 
@@ -14,16 +17,20 @@ export function createOpenAPIApp() {
   return app;
 }
 
-export function configureOpenAPI(app: OpenApiApp) {
-  app.doc("/doc", {
-    openapi: "3.0.0",
-    info: {
-      title: "Sound Harbour API",
-      version: "1.0.0",
-    },
-  });
-}
+const defaultHook: Hook<any, any, any, any> = (result, c) => {
+  if (!result.success) {
+    return c.json(
+      {
+        success: result.success,
+        error: result.error,
+      },
+      StatusCodes.UNPROCESSABLE_ENTITY,
+    );
+  }
+};
 
 export function createRouter() {
-  return new OpenAPIHono<AppBindings>();
+  return new OpenAPIHono<AppBindings>({
+    defaultHook,
+  });
 }
