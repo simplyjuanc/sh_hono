@@ -1,7 +1,8 @@
 import { createRoute, z } from "@hono/zod-openapi";
+import { StatusCodes } from "http-status-codes";
 
 import { createRouter } from "@/utils/app-utils.js";
-import { jsonContent } from "@/utils/json-validation/index.js";
+import { jsonContent } from "@/helpers/json-validation/index.js";
 
 const router = createRouter()
   .openapi(createRoute({
@@ -9,12 +10,12 @@ const router = createRouter()
     path: "/",
     parameters: [],
     responses: {
-      200: jsonContent(z.object({
+      [StatusCodes.OK.valueOf()]: jsonContent(z.object({
         message: z.string(),
       }), "Hello, World!"),
     },
   }), (c) => {
-    return c.json({ message: "Hello, World!" });
+    return c.json({ message: "Hello, World!" }, StatusCodes.OK);
   });
 
 export default router;
