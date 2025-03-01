@@ -3,9 +3,9 @@ import type { StatusCode } from "hono/utils/http-status";
 
 import { StatusCodes } from "http-status-codes";
 
-import env from "../env.js";
+import env from "@/env.js";
 
-const onError: ErrorHandler = (err, c) => {
+const errorHandler: ErrorHandler = (err, c) => {
   const currentStatus = "status" in err
     ? err.status
     : c.newResponse(null).status;
@@ -28,4 +28,4 @@ const onError: ErrorHandler = (err, c) => {
   );
 };
 
-export default onError;
+export default errorHandler;

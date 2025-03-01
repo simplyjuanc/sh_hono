@@ -2,10 +2,7 @@ import type { PinoLogger } from "hono-pino";
 
 import { OpenAPIHono } from "@hono/zod-openapi";
 
-import notFoundHandler from "@/not-found.js";
-import onError from "@/on-error.js";
-
-import logger from "./pino-logger.js";
+import { errorHandler, logger, notFoundHandler, serveFavicon } from "@/middleware/index.js";
 
 interface AppBindings {
   Variables: {
@@ -15,8 +12,9 @@ interface AppBindings {
 
 const app = new OpenAPIHono<AppBindings>();
 
+app.use(serveFavicon("🚀"));
 app.use(logger());
 app.notFound(notFoundHandler);
-app.onError(onError);
+app.onError(errorHandler);
 
 export default app;
