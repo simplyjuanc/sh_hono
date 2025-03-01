@@ -24,17 +24,21 @@ try {
 }
 catch (error) {
   if (error instanceof ZodError) {
-    let message = "Missing required values in .env:\n";
-    error.issues.forEach((issue) => {
-      message += `${issue.path[0]}\n`;
-    });
-    const e = new Error(message);
-    e.stack = "";
-    throw e;
+    handleEnvError(error);
   }
   else {
     console.error(error);
   }
+}
+
+function handleEnvError(error: z.ZodError<any>) {
+  let message = "Missing required values in .env:\n";
+  error.issues.forEach((issue) => {
+    message += `${issue.path[0]}\n`;
+  });
+  const e = new Error(message);
+  e.stack = "";
+  throw e;
 }
 
 export default EnvSchema.parse(process.env);
