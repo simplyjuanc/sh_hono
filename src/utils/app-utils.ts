@@ -14,10 +14,6 @@ export function createOpenAPIApp() {
   return app;
 }
 
-export function createRoute() {
-  return new OpenAPIHono<AppBindings>();
-}
-
 export function configureOpenAPI(app: OpenApiApp) {
   app.doc("/doc", {
     openapi: "3.0.0",
@@ -26,4 +22,8 @@ export function configureOpenAPI(app: OpenApiApp) {
       version: "1.0.0",
     },
   });
+}
+
+export function createRouter() {
+  return new OpenAPIHono<AppBindings>();
 }
