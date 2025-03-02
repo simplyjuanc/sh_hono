@@ -10,8 +10,6 @@ const client = testClient(app.route("/", router));
 
 describe("collection Router", () => {
   it("should return a specific item in a collection", async () => {
-    // const response = await app.request("/collection");
-
     const response = await client.collection[":id"].$get({
       param: {
         id: "4651e634-a530-4484-9b09-9616a28f35e3",
