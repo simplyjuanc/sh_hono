@@ -3,9 +3,10 @@
 
 import { config } from "dotenv";
 import { expand } from "dotenv-expand";
+import path from "node:path";
 import { z, ZodError } from "zod";
 
-const NodeEnv = z.enum(["localhost", "dev", "staging", "production"]);
+const NodeEnv = z.enum(["localhost", "dev", "staging", "production", "test"]);
 const LogLevel = z.enum(["trace", "debug", "info", "warn", "error", "fatal"]);
 
 const EnvSchema = z.object({
@@ -17,7 +18,12 @@ const EnvSchema = z.object({
 
 export type EnvSchema = z.infer<typeof EnvSchema>;
 
-expand(config());
+expand(config({
+  path: path.resolve(
+    process.cwd(),
+    process.env.NODE_ENV === "test" ? ".env.test" : ".env",
+  ),
+}));
 
 try {
   EnvSchema.parse(process.env);
