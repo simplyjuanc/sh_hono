@@ -1,4 +1,3 @@
-
 export const mockRecord = {
   id: "4651e634-a530-4484-9b09-9616a28f35e3",
   title: "The Dark Side of the Moon",

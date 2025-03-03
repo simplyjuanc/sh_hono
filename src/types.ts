@@ -6,7 +6,7 @@ export interface AppBindings {
     logger: PinoLogger;
     user: {
       id: string;
-    }
+    };
   };
 }
 

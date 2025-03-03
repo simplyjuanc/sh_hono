@@ -1,6 +1,8 @@
-import postgres from "postgres";
-import env from "@/env.js";
 import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
+
+import env from "@/env.js";
+
 import * as schema from "./schema/index.js";
 
 /**
@@ -16,10 +18,10 @@ const connection = postgres(env.DB_URL, {
   onnotice: env.DB_SEEDING ? () => { } : undefined,
 });
 
-if (env.NODE_ENV !== "production") globalForDb.connection = connection;
+if (env.NODE_ENV !== "production")
+  globalForDb.connection = connection;
 
 const db = drizzle(connection, { schema, logger: true });
 
-export type db = typeof db;
-
+export type Database = typeof db;
 export default db;

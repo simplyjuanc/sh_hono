@@ -2,12 +2,9 @@
   "name": "server",
   "type": "module",
   "version": "1.0.0",
-  "imports": {
-    "#/*": "./src/*"
-  },
   "scripts": {
     "clean": "rimraf dist",
-    "build": "pnpm clean && tsc",
+    "build": "pnpm clean && tsc && tsc-alias",
     "start": "pnpm build && node dist/index.js",
     "dev": "tsx watch src/index.ts",
     "lint": "eslint .",
@@ -39,6 +36,7 @@
     "drizzle-kit": "^0.30.5",
     "eslint": "^9.20.1",
     "eslint-plugin-format": "^1.0.1",
+    "tsc-alias": "^1.8.11",
     "tsx": "^4.19.3",
     "typescript": "^5.8.2",
     "vitest": "^3.0.7"
