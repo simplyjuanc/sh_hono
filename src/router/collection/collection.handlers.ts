@@ -3,7 +3,7 @@ import { StatusCodes } from "http-status-codes";
 import type { AppRouteHandler } from "@/types.js";
 
 import type { GetRoute, ListRoute } from "./collection.routes.js";
-import { getRecordById, getUserRecords } from "@/data/collection.js";
+import { getRecordById, getUserRecords } from "@/dal/collection.js";
 
 // function formatRestResponse(payload: ZodMediaTypeObject) {
 //   return async (c) => {

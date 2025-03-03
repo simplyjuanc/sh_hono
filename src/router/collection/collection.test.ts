@@ -4,11 +4,11 @@ import { beforeEach, describe, expect, it, vi, type Mock } from "vitest";
 import { createOpenAPIApp } from "@/utils/app-utils.js";
 
 import router from "./collection.index.js";
-import { getRecordById, getUserRecords } from "@/data/collection.js";
-import type { Release } from "@/models/release.js";
 import { mockRecord } from "@/../__mocks__/mockRecord.js";
+import { getRecordById, getUserRecords } from "@/dal/collection.js";
+import type { Release } from "@/models/release.js";
 
-vi.mock('@/data/collection.js', () => ({
+vi.mock('@/dal/collection.js', () => ({
   getRecordById: vi.fn((id:string) => Promise<Release>),
   getUserRecords: vi.fn((id:string) => Promise<Release[]>),
 }));

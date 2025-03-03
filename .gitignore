@@ -7,6 +7,9 @@
 .idea/workspace.xml
 .idea/usage.statistics.xml
 .idea/shelf
+# Local db build files
+data/**/*
+
 
 # deps
 node_modules/

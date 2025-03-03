@@ -29,7 +29,16 @@ const EnvSchema = z.object({
       z.literal("fatal"),
     ],
   ).default("info"),
-  DATABASE_URL: z.string(),
+
+
+  
+  DB_HOST: z.string(),
+  DB_USER: z.string(),
+  DB_PASSWORD: z.string(),
+  DB_NAME: z.string(),
+  DB_PORT: z.coerce.number(),
+  DB_URL: z.string(),
+  
   DB_MIGRATING: z.boolean().default(false),
   DB_SEEDING: z.boolean().default(false),
 });

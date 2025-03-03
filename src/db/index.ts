@@ -11,7 +11,7 @@ const globalForDb = globalThis as unknown as {
   connection: postgres.Sql;
 };
 
-const connection = postgres(env.DATABASE_URL, {
+const connection = postgres(env.DB_URL, {
   max: env.DB_MIGRATING || env.DB_SEEDING ? 1 : undefined,
   onnotice: env.DB_SEEDING ? () => { } : undefined,
 });
