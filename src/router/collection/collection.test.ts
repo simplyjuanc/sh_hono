@@ -6,6 +6,7 @@ import { createOpenAPIApp } from "@/utils/app-utils.js";
 import router from "./collection.index.js";
 import { getRecordById, getUserRecords } from "@/data/collection.js";
 import type { Release } from "@/models/release.js";
+import { mockRecord } from "@/../__mocks__/mockRecord.js";
 
 vi.mock('@/data/collection.js', () => ({
   getRecordById: vi.fn((id:string) => Promise<Release>),
@@ -27,14 +28,6 @@ describe("collection router", () => {
     vi.resetAllMocks();
   });
 
-  const mockRecord = {
-    id: "4651e634-a530-4484-9b09-9616a28f35e3",
-    title: "The Dark Side of the Moon",
-    masterId: "4637",
-    releaseDate: "1973-03-01",
-    artistIds: ["4d9f9b8f-7e3d-4f7a-bd4f-1e8f2f3e3b0b"],
-    trackIds: ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
-  };
 
   it("should return the correct release from the dal", async () => {
     (getRecordById as Mock).mockResolvedValue(mockRecord)
