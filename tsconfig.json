@@ -5,11 +5,13 @@
     "jsxImportSource": "hono/jsx",
     "module": "NodeNext",
     "paths": {
-      "@/*": ["./src/*"]
+      "#/*": ["./src/*"]
     },
     "types": ["node"],
     "strict": true,
     "verbatimModuleSyntax": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
   }
 }
