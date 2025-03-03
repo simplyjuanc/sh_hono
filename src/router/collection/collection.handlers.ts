@@ -3,8 +3,7 @@ import { StatusCodes } from "http-status-codes";
 import type { AppRouteHandler } from "@/types.js";
 
 import type { GetRoute, ListRoute } from "./collection.routes.js";
-import { getRecordById } from "@/data/collection.js";
-import logger from "@/middleware/pino-logger.js";
+import { getRecordById, getUserRecords } from "@/data/collection.js";
 
 // function formatRestResponse(payload: ZodMediaTypeObject) {
 //   return async (c) => {
@@ -13,21 +12,19 @@ import logger from "@/middleware/pino-logger.js";
 // }
 
 export const listHandler: AppRouteHandler<ListRoute> = async (c) => {
-  return c.json([{
-    id: "4651e634-a530-4484-9b09-9616a28f35e3",
-    title: "The Dark Side of the Moon",
-    masterId: "4637",
-    releaseDate: "1973-03-01",
-    artistIds: ["4d9f9b8f-7e3d-4f7a-bd4f-1e8f2f3e3b0b"],
-    trackIds: ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
-  }], StatusCodes.OK);
+  const userId = c.var.user.id;
+  const result = await getUserRecords(userId);
+  c.var.logger.info(`User "${userId}" records returned.`);
+  return c.json(result, StatusCodes.OK);
 };
 
 
-
+// TODO: CHange this to query param (first in Route)
 export const getHandler: AppRouteHandler<GetRoute> = async (c) => {
-  const result = await getRecordById(c.req.param().id);
-  c.var.logger.debug(`Record '${c.req.param().id}' returned.`);
+  const recordId = c.req.param().id;
+  const result = await getRecordById(recordId);
+
+  c.var.logger.debug(`Record '${recordId}' returned.`);
   return c.json(result, StatusCodes.OK);
 };
 
