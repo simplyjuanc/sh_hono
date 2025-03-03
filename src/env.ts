@@ -29,6 +29,9 @@ const EnvSchema = z.object({
       z.literal("fatal"),
     ],
   ).default("info"),
+  DATABASE_URL: z.string(),
+  DB_MIGRATING: z.boolean().default(false),
+  DB_SEEDING: z.boolean().default(false),
 });
 
 export type EnvSchema = z.infer<typeof EnvSchema>;
