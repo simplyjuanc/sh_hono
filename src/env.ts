@@ -13,7 +13,6 @@ const EnvSchema = z.object({
       z.literal("dev"),
       z.literal("staging"),
       z.literal("production"),
-      z.literal("test"),
     ],
   ).default("dev"),
   HOST: z.string().default("127.0.0.1"),

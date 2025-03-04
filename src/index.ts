@@ -9,5 +9,5 @@ serve({
   port: Number(env.PORT),
 }, (info) => {
   // eslint-disable-next-line no-console
-  console.log(`Server is running on http://localhost:${info.port}`);
+  console.log(`🚀 Server is running on http://localhost:${info.port} 🚀`);
 });
