@@ -6,7 +6,16 @@ services:
       - ./data/index:/var/lib/postgresql/data
     ports:
       - ${DB_PORT}:5432
-    environment:
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_DB=${DB_NAME}
+    env_file:
+      - .env
+  app:
+    build:
+      context: .
+      target: runner
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    ports:
+      - ${PORT}:${PORT}
+    depends_on:
+      - db
