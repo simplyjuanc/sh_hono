@@ -6,10 +6,13 @@ import { jsonContent } from "@/helpers/json-validation";
 const releaseSchema = z.object({
   id: z.string(),
   title: z.string(),
-  masterId: z.string(),
-  releaseDate: z.date().optional(),
-  artistIds: z.array(z.string()),
-  trackIds: z.array(z.string()),
+  artists: z.array(z.string()),
+  tracks: z.array(z.string()),
+  price: z.number(),
+  format: z.string(),
+  ownerId: z.string(),
+  condition: z.string().optional(),
+  notes: z.string().optional(),
 });
 
 export const list = createRoute({
@@ -40,8 +43,7 @@ export const get = createRoute({
     },
   ],
   responses: {
-    [StatusCodes.OK.valueOf()]: jsonContent(releaseSchema, "Returns a record for the authenticated user."),
-    [StatusCodes.BAD_REQUEST.valueOf()]: jsonContent(z.object({ message: z.string() }), "Record ID is required."),
+    [StatusCodes.OK.valueOf()]: jsonContent(releaseSchema, "Returns a record in the user's collection."),
   },
 });
 

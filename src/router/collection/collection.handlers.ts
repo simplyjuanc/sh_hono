@@ -19,7 +19,6 @@ export const listHandler: AppRouteHandler<ListRoute> = async (c) => {
   return c.json(result, StatusCodes.OK);
 };
 
-// TODO: CHange this to query param (first in Route)
 export const getHandler: AppRouteHandler<GetRoute> = async (c) => {
   const recordId = c.req.param().id;
   const result = await getRecordById(recordId);
