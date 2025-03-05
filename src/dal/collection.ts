@@ -1,17 +1,13 @@
-import type { Release } from "@/models/release";
+import type { Item } from "@/models/item";
 
-import { mockRecord } from "@/__mocks__/mock-record";
+import { mockItem } from "@/__mocks__/mock-record";
 
-export async function getRecordById(id: string): Promise<Release> {
-  // TODO
-  // Mock database query
+export async function getRecordById(id: string): Promise<Item> {
   console.warn("getCollectionById", id);
-  return { ...mockRecord, releaseDate: new Date() };
+  return mockItem;
 }
 
-export async function getUserRecords(userId: string): Promise<Release[]> {
-  // TODO
-  // Mock database query
+export async function getUserRecords(userId: string): Promise<Item[]> {
   console.warn("getUserRecords", userId);
-  return [{ ...mockRecord, releaseDate: new Date() }];
+  return [mockItem];
 }
