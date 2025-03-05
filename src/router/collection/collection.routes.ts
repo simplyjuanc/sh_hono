@@ -2,6 +2,7 @@ import { createRoute, z } from "@hono/zod-openapi";
 import { StatusCodes } from "http-status-codes";
 
 import { jsonContent } from "@/helpers/json-validation/index.js";
+import { API_VERSION } from "@/utils/app-utils.js";
 
 const releaseSchema = z.object({
   id: z.string(),
@@ -15,7 +16,7 @@ const releaseSchema = z.object({
 export const list = createRoute({
   tags: ["Collection"],
   method: "get",
-  path: "/collection",
+  path: `/${API_VERSION}/collection`,
   parameters: [],
   responses: {
     [StatusCodes.OK.valueOf()]: jsonContent(z.array(releaseSchema), "Returns a collection of records for the authenticated user."),
@@ -25,7 +26,7 @@ export const list = createRoute({
 export const get = createRoute({
   tags: ["Collection"],
   method: "get",
-  path: "/collection/{id}",
+  path: `/${API_VERSION}/collection/{id}`,
   parameters: [
     {
       name: "id",

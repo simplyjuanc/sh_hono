@@ -23,6 +23,7 @@ COPY --from=builder /app/node_modules /app/node_modules
 COPY --from=builder /app/dist /app/dist
 COPY --from=builder /app/package.json /app/package.json
 
+ENV LOG_LEVEL=info
 EXPOSE 3000
 
 CMD ["node", "dist/index.js"]
