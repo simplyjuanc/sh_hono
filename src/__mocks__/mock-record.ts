@@ -20,7 +20,7 @@ export const mockItem: Item = {
   ],
   price: 19.99,
   ownerId: "4d9f9b8f-7e3d-4f7a-bd4f-1e8f2f3e3b0b",
-  format: Format.Vinyl,
-  condition: ItemCondition.MINT,
+  format: "VINYL",
+  condition: "MINT",
   notes: "This is a great album!",
 };

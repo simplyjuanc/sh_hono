@@ -1,1 +1,1 @@
-export default {};
+export { default as items } from "./items.table";

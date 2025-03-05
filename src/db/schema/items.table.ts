@@ -12,11 +12,11 @@ const releases = createTable("releases", {
   masterId: text("master_id").notNull(),
   price: numeric("price", { precision: 2 }).notNull(),
   condition: ConditionEnum("condition"),
-  format: FormatEnum("format"),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at")
+  format: FormatEnum("format").notNull(),
+  createdAt: timestamp("created_at", {mode: "string"}).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", {mode: "string"})
     .notNull()
-    .$onUpdate(() => new Date()),
+    .$onUpdate(() => new Date().toISOString()),
   deletedAt: timestamp("deleted_at"),
 });
 
