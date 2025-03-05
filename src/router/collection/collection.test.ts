@@ -31,7 +31,7 @@ describe("collection router", () => {
   it("should return the correct release from the dal", async () => {
     (getRecordById as Mock).mockResolvedValue(mockRecord);
 
-    const response = await client.collection[":id"].$get({
+    const response = await client.v1.collection[":id"].$get({
       param: {
         id: "4651e634-a530-4484-9b09-9616a28f35e3",
       },
@@ -46,7 +46,7 @@ describe("collection router", () => {
   it("should return the user record collection", async () => {
     (getUserRecords as Mock).mockResolvedValue([mockRecord]);
 
-    const response = await client.collection.$get();
+    const response = await client.v1.collection.$get();
     const result = await response.json();
 
     expect(getUserRecords).toHaveBeenCalledTimes(1);
@@ -57,7 +57,7 @@ describe("collection router", () => {
   it("should call the dal with the user id", async () => {
     (getUserRecords as Mock).mockResolvedValue([mockRecord]);
 
-    const response = await client.collection.$get();
+    const response = await client.v1.collection.$get();
     const result = await response.json();
 
     expect(getUserRecords).toHaveBeenCalledTimes(1);
