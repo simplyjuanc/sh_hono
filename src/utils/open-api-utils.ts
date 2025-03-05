@@ -1,6 +1,6 @@
 import { apiReference } from "@scalar/hono-api-reference";
 
-import type { OpenApiApp } from "@/types.js";
+import type { OpenApiApp } from "@/types";
 
 export function configureOpenAPI(app: OpenApiApp) {
   app.doc("/docs", {

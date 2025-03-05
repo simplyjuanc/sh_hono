@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import SlugParamsSchema from "./slug-params.js";
+import SlugParamsSchema from "./slug-params";
 
 describe("slug-params", () => {
   it("allows letters", () => {

@@ -3,7 +3,7 @@ import type { StatusCode } from "hono/utils/http-status";
 
 import { StatusCodes } from "http-status-codes";
 
-import env from "@/env.js";
+import env from "@/env";
 
 const errorHandler: ErrorHandler = (err, c) => {
   const currentStatus = "status" in err

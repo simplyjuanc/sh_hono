@@ -3,13 +3,13 @@ import type { Mock } from "vitest";
 import { testClient } from "hono/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { mockRecord } from "@/__mocks__/mock-record.js";
-import { getRecordById, getUserRecords } from "@/dal/collection.js";
-import { createOpenAPIApp } from "@/utils/app-utils.js";
+import { mockRecord } from "@/__mocks__/mock-record";
+import { getRecordById, getUserRecords } from "@/dal/collection";
+import { createOpenAPIApp } from "@/utils/app-utils";
 
-import router from "./collection.index.js";
+import router from "./collection.index";
 
-vi.mock("@/dal/collection.js", () => ({
+vi.mock("@/dal/collection", () => ({
   getRecordById: vi.fn(),
   getUserRecords: vi.fn(),
 }));

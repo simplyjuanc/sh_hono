@@ -2,7 +2,7 @@ import type { NotFoundHandler } from "hono";
 
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
 
-import type { AppBindings } from "@/types.js";
+import type { AppBindings } from "@/types";
 
 const notFoundHandler: NotFoundHandler<AppBindings> = (c) => {
   return c.json({

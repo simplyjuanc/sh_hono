@@ -1,8 +1,7 @@
 import { createRoute, z } from "@hono/zod-openapi";
 import { StatusCodes } from "http-status-codes";
 
-import { jsonContent } from "@/helpers/json-validation/index.js";
-import { API_VERSION } from "@/utils/app-utils.js";
+import { jsonContent } from "@/helpers/json-validation";
 
 const releaseSchema = z.object({
   id: z.string(),
@@ -16,7 +15,7 @@ const releaseSchema = z.object({
 export const list = createRoute({
   tags: ["Collection"],
   method: "get",
-  path: `/${API_VERSION}/collection`,
+  path: `/collection`,
   parameters: [],
   responses: {
     [StatusCodes.OK.valueOf()]: jsonContent(z.array(releaseSchema), "Returns a collection of records for the authenticated user."),
@@ -26,11 +25,12 @@ export const list = createRoute({
 export const get = createRoute({
   tags: ["Collection"],
   method: "get",
-  path: `/${API_VERSION}/collection/{id}`,
+  path: `/collection/:id`,
   parameters: [
     {
       name: "id",
       in: "path",
+      allowEmptyValue: false,
       required: true,
       schema: {
         type: "string",
@@ -41,6 +41,7 @@ export const get = createRoute({
   ],
   responses: {
     [StatusCodes.OK.valueOf()]: jsonContent(releaseSchema, "Returns a record for the authenticated user."),
+    [StatusCodes.BAD_REQUEST.valueOf()]: jsonContent(z.object({ message: z.string() }), "Record ID is required."),
   },
 });
 

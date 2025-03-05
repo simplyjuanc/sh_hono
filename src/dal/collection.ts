@@ -1,6 +1,6 @@
-import type { Release } from "@/models/release.js";
+import type { Release } from "@/models/release";
 
-import { mockRecord } from "@/__mocks__/mock-record.js";
+import { mockRecord } from "@/__mocks__/mock-record";
 
 export async function getRecordById(id: string): Promise<Release> {
   // TODO

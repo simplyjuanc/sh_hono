@@ -1,10 +1,10 @@
 import { StatusCodes } from "http-status-codes";
 
-import type { AppRouteHandler } from "@/types.js";
+import type { AppRouteHandler } from "@/types";
 
-import { getRecordById, getUserRecords } from "@/dal/collection.js";
+import { getRecordById, getUserRecords } from "@/dal/collection";
 
-import type { GetRoute, ListRoute } from "./collection.routes.js";
+import type { GetRoute, ListRoute } from "./collection.routes";
 
 // function formatRestResponse(payload: ZodMediaTypeObject) {
 //   return async (c) => {

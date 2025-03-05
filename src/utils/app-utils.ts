@@ -3,9 +3,9 @@ import type { Hook } from "@hono/zod-openapi";
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { StatusCodes } from "http-status-codes";
 
-import type { AppBindings, OpenApiApp } from "@/types.js";
+import type { AppBindings, OpenApiApp } from "@/types";
 
-import { errorHandler, logger, notFoundHandler, serveFavicon } from "@/middleware/index.js";
+import { errorHandler, logger, notFoundHandler, serveFavicon } from "@/middleware/index";
 
 export function createOpenAPIApp() {
   const app = new OpenAPIHono<AppBindings>();
