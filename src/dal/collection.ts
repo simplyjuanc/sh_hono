@@ -46,7 +46,7 @@ function mapToItemDto(item: InferItemSelect): Item {
   const result: Item = {
     ...item,
     price: Number(item.price),
-    condition: item.condition ?? undefined,
+    condition: item.condition ?? "UNKNOWN", // default to "POOR" if condition is null
   };
   return result;
 }
