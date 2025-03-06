@@ -13,7 +13,6 @@ const items = createTable("items", {
   title: text("title").notNull(),
   artists: text("artists").array().notNull(),
   releaseDate: text("release_date"),
-  masterId: text("master_id").notNull(),
   price: numeric("price", { precision: 2 }).notNull(),
   condition: ConditionEnum("condition"),
   ownerId: uuid("owner_id").notNull(),

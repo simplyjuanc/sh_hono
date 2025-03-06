@@ -3,7 +3,6 @@ import { eq } from "drizzle-orm";
 import type { InferItemSelect } from "@/db/schema/items.table";
 import type { Item } from "@/models/item";
 
-import { mockItem } from "@/__mocks__/mock-record";
 import drizzleDb from "@/db";
 import { items } from "@/db/schema";
 
@@ -28,6 +27,18 @@ export async function getUserRecords(userId: string, db = drizzleDb): Promise<It
     .where(eq(items.ownerId, userId));
 
   return collection.map(mapToItemDto);
+}
+
+export async function createItem(newItem: Item, db = drizzleDb): Promise<Item> {
+  const insertedItem = await db
+    .insert(items)
+    .values({
+      ...newItem,
+      price: newItem.price.toString(),
+    })
+    .returning();
+
+  return mapToItemDto(insertedItem[0]);
 }
 
 function mapToItemDto(item: InferItemSelect): Item {
