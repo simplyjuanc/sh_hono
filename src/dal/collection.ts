@@ -6,11 +6,15 @@ import { mockItem } from "@/__mocks__/mock-record";
 import drizzleDb from "@/db";
 import { items } from "@/db/schema";
 
-export async function getRecordById(id: string, db = drizzleDb): Promise<Item> {
+export async function getRecordById(id: string, db = drizzleDb): Promise<Item | undefined> {
   const item = await db
     .select()
     .from(items)
     .where(eq(items.id, id));
+
+  if (item.length === 0) {
+    return;
+  }
 
   const firstItem = item[0];
   const result: Item = {

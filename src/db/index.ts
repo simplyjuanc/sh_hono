@@ -3,7 +3,7 @@ import postgres from "postgres";
 
 import env from "@/env";
 
-import * as schema from "./schema/index";
+import * as schema from "./schema";
 
 /**
  * Cache the database connection in development.

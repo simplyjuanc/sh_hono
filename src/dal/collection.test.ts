@@ -31,7 +31,13 @@ describe("collection dal", () => {
     expect(result).toEqual(mockItem);
   });
 
-  it("should return the user record collection", async () => {
-    // Add your test implementation here
+  it("should return null if record is not found", async () => {
+    db.select = vi.fn().mockReturnValue({
+      from: vi.fn().mockReturnValue({
+        where: vi.fn().mockResolvedValue([]),
+      }),
+    });
+    const result = await getRecordById(itemId);
+    expect(result).toBeUndefined();
   });
 });
