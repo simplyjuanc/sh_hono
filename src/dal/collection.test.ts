@@ -11,10 +11,9 @@ import { createItem, getRecordById, getUserRecords } from "./collection";
 describe("collection dal", () => {
   const itemId = crypto.randomUUID();
 
-  const mockItem: Item = {
+  const mockItemBase: Item = {
     id: itemId,
     ownerId: crypto.randomUUID(),
-    tracks: [],
     price: 0,
     condition: "FAIR",
     format: "VINYL",
@@ -28,7 +27,7 @@ describe("collection dal", () => {
 
   describe("getRecordById", () => {
     it("should call the collection table with the correct if", async () => {
-      mockQueryFromDb(mockItem);
+      mockQueryFromDb(mockItemBase);
 
       vi.spyOn(db.select().from(items), "where");
 
@@ -39,11 +38,11 @@ describe("collection dal", () => {
     });
 
     it("should return the correct record from the dal", async () => {
-      mockQueryFromDb(mockItem);
+      mockQueryFromDb(mockItemBase);
 
       const result = await getRecordById(itemId);
 
-      expect(result).toEqual(mockItem);
+      expect(result).toEqual(mockItemBase);
     });
 
     it("should throw an error if record is not found", async () => {
@@ -72,11 +71,11 @@ describe("collection dal", () => {
     it("should return the correct records from the dal", async () => {
       const userId = crypto.randomUUID();
 
-      mockQueryFromDb(mockItem);
+      mockQueryFromDb(mockItemBase);
 
       const result = await getUserRecords(userId);
 
-      expect(result).toEqual([mockItem]);
+      expect(result).toEqual([mockItemBase]);
     });
 
     it("should return an empty array if no records are found", async () => {
@@ -90,26 +89,31 @@ describe("collection dal", () => {
     });
   });
 
+  const mockItemInsertAttributes = {
+    ...mockItemBase,
+    price: mockItemBase.price.toString(),
+  };
+
   describe("createItem", () => {
     it("should call the collection table with the correct data", async () => {
       const expectedCallArg = {
-        ...mockItem,
-        price: mockItem.price.toString(),
+        ...mockItemBase,
+        price: mockItemBase.price.toString(),
       };
 
-      mockInsertIntoDb(mockItem);
+      mockInsertIntoDb(mockItemBase);
       vi.spyOn(db.insert(items), "values");
 
-      await createItem(mockItem);
+      await createItem(mockItemInsertAttributes);
 
       expect(db.insert(items).values).toHaveBeenCalledWith(expectedCallArg);
     });
 
     it("should return the correct record from the dal", async () => {
-      mockInsertIntoDb(mockItem);
-      const result = await createItem(mockItem);
+      mockInsertIntoDb(mockItemBase);
+      const result = await createItem(mockItemInsertAttributes);
 
-      expect(result).toEqual(mockItem);
+      expect(result).toEqual(mockItemBase);
     });
   });
 });

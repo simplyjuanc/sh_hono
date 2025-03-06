@@ -99,6 +99,7 @@ describe("collection router", () => {
       const result = await response.json();
 
       expect(createItem).toHaveBeenCalledTimes(1);
+      expect(createItem).toHaveBeenCalledWith(creationRequest);
       expect(result).toEqual(expectedResult);
     });
   });

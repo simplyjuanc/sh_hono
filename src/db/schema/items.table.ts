@@ -13,9 +13,9 @@ const items = createTable("items", {
   title: text("title").notNull(),
   artists: text("artists").array().notNull(),
   releaseDate: text("release_date"),
-  price: numeric("price", { precision: 2 }).notNull(),
+  price: numeric("price").notNull(),
   condition: ConditionEnum("condition"),
-  ownerId: uuid("owner_id").notNull(),
+  ownerId: uuid("owner_id").notNull().references(() => users.id),
   format: FormatEnum("format").notNull(),
   createdAt: timestamp("created_at", { mode: "string" }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { mode: "string" })
