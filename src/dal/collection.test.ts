@@ -1,55 +1,71 @@
-import { fromPartial } from "@total-typescript/shoehorn";
 import { eq } from "drizzle-orm";
+import { v4 as uuidV4 } from "uuid";
 import { describe, expect, it, vi } from "vitest";
 
 import type { Item } from "@/models/item";
 
+import { mockItem } from "@/__mocks__/mock-record";
 import db from "@/db";
 import { items } from "@/db/schema";
 
-import { getRecordById } from "./collection";
+import { getRecordById, getUserRecords } from "./collection";
 
 describe("collection dal", () => {
-  const itemId = "4651e634-a530-4484-9b09-9616a28f35e3";
+  describe("getRecordById", () => {
+    const itemId = "4651e634-a530-4484-9b09-9616a28f35e3";
 
-  const mockItem: Item = {
-    id: itemId,
-    ownerId: "me",
-    tracks: [],
-    price: 0,
-    condition: "FAIR",
-    format: "VINYL",
-    title: "Test Item",
-    artists: ["Test Artist", "Test Artist 2"],
-  };
+    const mockItem: Item = {
+      id: itemId,
+      ownerId: "me",
+      tracks: [],
+      price: 0,
+      condition: "FAIR",
+      format: "VINYL",
+      title: "Test Item",
+      artists: ["Test Artist", "Test Artist 2"],
+    };
 
-  it("should call the collection table with the correct if", async () => {
-    mockQueryReturnValue(mockItem);
+    it("should call the collection table with the correct if", async () => {
+      mockQueryReturnValue(mockItem);
 
-    vi.spyOn(db.select().from(items), "where");
+      vi.spyOn(db.select().from(items), "where");
 
-    await getRecordById(itemId);
+      await getRecordById(itemId);
 
-    // expect(db.select).toHaveBeenCalledWith();
-    expect(db.select().from(items).where).toHaveBeenCalledWith(eq(items.id, itemId));
-  });
-
-  it("should return the correct record from the dal", async () => {
-    mockQueryReturnValue(mockItem);
-
-    const result = await getRecordById(itemId);
-
-    expect(result).toEqual(mockItem);
-  });
-
-  it("should throw an error if record is not found", async () => {
-    db.select = vi.fn().mockReturnValue({
-      from: vi.fn().mockReturnValue({
-        where: vi.fn().mockRejectedValue(new Error("Record not found")),
-      }),
+      // expect(db.select).toHaveBeenCalledWith();
+      expect(db.select().from(items).where).toHaveBeenCalledWith(eq(items.id, itemId));
     });
 
-    await expect(getRecordById(itemId)).rejects.toThrow("Record not found");
+    it("should return the correct record from the dal", async () => {
+      mockQueryReturnValue(mockItem);
+
+      const result = await getRecordById(itemId);
+
+      expect(result).toEqual(mockItem);
+    });
+
+    it("should throw an error if record is not found", async () => {
+      db.select = vi.fn().mockReturnValue({
+        from: vi.fn().mockReturnValue({
+          where: vi.fn().mockRejectedValue(new Error("Record not found")),
+        }),
+      });
+
+      await expect(getRecordById(itemId)).rejects.toThrow("Record not found");
+    });
+  });
+
+  describe("getUserRecords", () => {
+    it("should call the collection table with the correct user id", async () => {
+      const userId = uuidV4();
+
+      mockQueryReturnValue(mockItem);
+      vi.spyOn(db.select().from(items), "where");
+
+      await getUserRecords(userId);
+
+      expect(db.select().from(items).where).toHaveBeenCalledWith(eq(items.ownerId, userId));
+    });
   });
 });
 

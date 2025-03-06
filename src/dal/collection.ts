@@ -1,5 +1,6 @@
 import { eq } from "drizzle-orm";
 
+import type { InferItemSelect } from "@/db/schema/items.table";
 import type { Item } from "@/models/item";
 
 import { mockItem } from "@/__mocks__/mock-record";
@@ -16,18 +17,26 @@ export async function getRecordById(id: string, db = drizzleDb): Promise<Item> {
     throw new Error("Record not found");
   }
 
-  const firstItem = item[0];
-  const result: Item = {
-    ...firstItem,
-    ownerId: "me",
-    tracks: [],
-    price: 0,
-    condition: firstItem.condition ?? undefined,
-  };
-  return result;
+  return mapToItemDto(item[0]);
 }
 
-export async function getUserRecords(userId: string): Promise<Item[]> {
+export async function getUserRecords(userId: string, db = drizzleDb): Promise<Item[]> {
   console.warn("getUserRecords", userId);
+  const collection = await db
+    .select()
+    .from(items)
+    .where(eq(items.ownerId, userId));
+
   return [mockItem];
+}
+
+function mapToItemDto(item: InferItemSelect): Item {
+  // TODO finish mapping once the schema is complete
+  const result: Item = {
+    ...item,
+    tracks: [],
+    price: Number(item.price),
+    condition: item.condition ?? undefined,
+  };
+  return result;
 }
