@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { v4 as uuidV4 } from "uuid";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { Item } from "@/models/item";
 
@@ -10,11 +10,11 @@ import { items } from "@/db/schema";
 import { createItem, getRecordById, getUserRecords } from "./collection";
 
 describe("collection dal", () => {
-  const itemId = "4651e634-a530-4484-9b09-9616a28f35e3";
+  const itemId = uuidV4();
 
   const mockItem: Item = {
     id: itemId,
-    ownerId: "me",
+    ownerId: uuidV4(),
     tracks: [],
     price: 0,
     condition: "FAIR",
@@ -22,6 +22,10 @@ describe("collection dal", () => {
     title: "Test Item",
     artists: ["Test Artist", "Test Artist 2"],
   };
+
+  beforeEach(() => {
+    vi.resetAllMocks();
+  });
 
   describe("getRecordById", () => {
     it("should call the collection table with the correct if", async () => {
@@ -103,6 +107,7 @@ describe("collection dal", () => {
     });
 
     it("should return the correct record from the dal", async () => {
+      mockInsertIntoDb(mockItem);
       const result = await createItem(mockItem);
 
       expect(result).toEqual(mockItem);
