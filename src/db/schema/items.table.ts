@@ -1,4 +1,4 @@
-import type { InferSelectModel } from "drizzle-orm";
+import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
 
 import { relations } from "drizzle-orm";
 import { numeric, text, timestamp, uuid } from "drizzle-orm/pg-core";
@@ -32,5 +32,6 @@ export const itemsRelations = relations(items, ({ one }) => ({
 }));
 
 export type InferItemSelect = InferSelectModel<typeof items>;
+export type InferItemInsert = InferInsertModel<typeof items>;
 
 export default items;

@@ -2,21 +2,12 @@ import { createRoute, z } from "@hono/zod-openapi";
 import { StatusCodes } from "http-status-codes";
 
 import { jsonContent } from "@/helpers/json-validation";
+import { releaseSchema } from "@/models/item";
 
-const releaseSchema = z.object({
-  id: z.string(),
-  title: z.string(),
-  artists: z.array(z.string()),
-  tracks: z.array(z.string()),
-  price: z.number(),
-  format: z.string(),
-  ownerId: z.string(),
-  condition: z.string().optional(),
-  notes: z.string().optional(),
-});
+const COLLECTION_TAGS = ["Collection"];
 
 export const list = createRoute({
-  tags: ["Collection"],
+  tags: COLLECTION_TAGS,
   method: "get",
   path: `/collection`,
   parameters: [],
@@ -26,7 +17,7 @@ export const list = createRoute({
 });
 
 export const get = createRoute({
-  tags: ["Collection"],
+  tags: COLLECTION_TAGS,
   method: "get",
   path: `/collection/:id`,
   parameters: [

@@ -29,6 +29,9 @@ dependencies:
   drizzle-orm:
     specifier: ^0.40.0
     version: 0.40.0(@types/pg@8.11.11)(pg@8.13.3)(postgres@3.4.5)
+  drizzle-zod:
+    specifier: ^0.7.0
+    version: 0.7.0(drizzle-orm@0.40.0)(zod@3.24.2)
   hono:
     specifier: ^4.7.2
     version: 4.7.2
@@ -2986,6 +2989,16 @@ packages:
       '@types/pg': 8.11.11
       pg: 8.13.3
       postgres: 3.4.5
+    dev: false
+
+  /drizzle-zod@0.7.0(drizzle-orm@0.40.0)(zod@3.24.2):
+    resolution: {integrity: sha512-xgCRYYVEzRkeXTS33GSMgoowe3vKsMNBjSI+cwG1oLQVEhAWWbqtb/AAMlm7tkmV4fG/uJjEmWzdzlEmTgWOoQ==}
+    peerDependencies:
+      drizzle-orm: '>=0.36.0'
+      zod: '>=3.0.0'
+    dependencies:
+      drizzle-orm: 0.40.0(@types/pg@8.11.11)(pg@8.13.3)(postgres@3.4.5)
+      zod: 3.24.2
     dev: false
 
   /eastasianwidth@0.2.0:

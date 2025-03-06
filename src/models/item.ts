@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export type ItemCondition =
   | "MINT"
   | "NEAR_MINT"
@@ -26,3 +28,15 @@ export interface Item {
   condition?: ItemCondition;
   notes?: string;
 }
+
+export const releaseSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  artists: z.array(z.string()),
+  tracks: z.array(z.string()),
+  price: z.number(),
+  format: z.string(),
+  ownerId: z.string(),
+  condition: z.string().optional(),
+  notes: z.string().optional(),
+});
