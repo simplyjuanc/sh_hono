@@ -17,6 +17,9 @@ dependencies:
   '@scalar/hono-api-reference':
     specifier: ^0.5.177
     version: 0.5.177(@hyperjump/browser@1.2.0)(hono@4.7.2)(tailwindcss@4.0.9)(typescript@5.8.2)
+  '@total-typescript/shoehorn':
+    specifier: ^0.1.2
+    version: 0.1.2
   dotenv:
     specifier: ^16.4.7
     version: 16.4.7
@@ -1975,6 +1978,10 @@ packages:
     dependencies:
       '@tanstack/virtual-core': 3.13.2
       vue: 3.5.13(typescript@5.8.2)
+    dev: false
+
+  /@total-typescript/shoehorn@0.1.2:
+    resolution: {integrity: sha512-p7nNZbOZIofpDNyP0u1BctFbjxD44Qc+oO5jufgQdFdGIXJLc33QRloJpq7k5T59CTgLWfQSUxsuqLcmeurYRw==}
     dev: false
 
   /@types/debug@4.1.12:
