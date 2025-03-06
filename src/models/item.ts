@@ -29,7 +29,7 @@ export interface Item {
 }
 
 export const itemSchema = z.object({
-  id: z.string(),
+  id: z.string().uuid(),
   title: z.string(),
   artists: z.array(z.string()),
   price: z.number(),
@@ -37,6 +37,10 @@ export const itemSchema = z.object({
   ownerId: z.string(),
   condition: z.string().optional(),
   notes: z.string().optional(),
+}).openapi({
+  type: "object",
+  title: "Item",
+  description: "A physical or digital item in a user's collection",
 });
 
 export const insertItemSchema = itemSchema.omit({ id: true });

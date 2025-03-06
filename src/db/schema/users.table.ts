@@ -1,3 +1,5 @@
+import type { InferInsertModel, InferSelectModel } from "drizzle-orm";
+
 import { relations } from "drizzle-orm";
 import { text, timestamp, uuid } from "drizzle-orm/pg-core";
 
@@ -22,5 +24,8 @@ const users = createTable("users", {
 export const userRelations = relations(users, ({ many }) => ({
   ownedItems: many(items),
 }));
+
+export type InferItemSelect = InferSelectModel<typeof users>;
+export type InferItemInsert = InferInsertModel<typeof users>;
 
 export default users;
