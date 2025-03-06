@@ -1,4 +1,4 @@
-export type ItemCondition = 
+export type ItemCondition =
   | "MINT"
   | "NEAR_MINT"
   | "VERY_GOOD_PLUS"
@@ -8,7 +8,7 @@ export type ItemCondition =
   | "FAIR"
   | "POOR";
 
-export type Format = 
+export type Format =
   | "VINYL"
   | "CD"
   | "CASSETTE"
