@@ -2,7 +2,7 @@ import { createRoute, z } from "@hono/zod-openapi";
 import { StatusCodes } from "http-status-codes";
 
 import { jsonContent } from "@/helpers/json-validation";
-import { releaseSchema } from "@/models/item";
+import { insertItemSchema, itemSchema } from "@/models/item";
 
 const COLLECTION_TAGS = ["Collection"];
 
@@ -12,7 +12,7 @@ export const list = createRoute({
   path: `/collection`,
   parameters: [],
   responses: {
-    [StatusCodes.OK.valueOf()]: jsonContent(z.array(releaseSchema), "Returns a collection of records for the authenticated user."),
+    [StatusCodes.OK.valueOf()]: jsonContent(z.array(itemSchema), "Returns a collection of records for the authenticated user."),
   },
 });
 
@@ -34,9 +34,22 @@ export const get = createRoute({
     },
   ],
   responses: {
-    [StatusCodes.OK.valueOf()]: jsonContent(releaseSchema, "Returns a record in the user's collection."),
+    [StatusCodes.OK.valueOf()]: jsonContent(itemSchema, "Returns a record in the user's collection."),
+  },
+});
+
+export const post = createRoute({
+  tags: COLLECTION_TAGS,
+  method: "post",
+  path: `/collection`,
+  request: {
+    body: jsonContent(insertItemSchema, "The record to add to the user's collection."),
+  },
+  responses: {
+    [StatusCodes.OK.valueOf()]: jsonContent(itemSchema, "Returns the newly created record."),
   },
 });
 
 export type ListRoute = typeof list;
 export type GetRoute = typeof get;
+export type PostRoute = typeof post;

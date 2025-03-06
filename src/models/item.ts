@@ -29,7 +29,7 @@ export interface Item {
   notes?: string;
 }
 
-export const releaseSchema = z.object({
+export const itemSchema = z.object({
   id: z.string(),
   title: z.string(),
   artists: z.array(z.string()),
@@ -40,3 +40,5 @@ export const releaseSchema = z.object({
   condition: z.string().optional(),
   notes: z.string().optional(),
 });
+
+export const insertItemSchema = itemSchema.omit({ id: true });

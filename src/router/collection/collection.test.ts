@@ -3,8 +3,10 @@ import type { Mock } from "vitest";
 import { testClient } from "hono/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { Item } from "@/models/item";
+
 import { mockItem } from "@/__mocks__/mock-record";
-import { getRecordById, getUserRecords } from "@/dal/collection";
+import { createItem, getRecordById, getUserRecords } from "@/dal/collection";
 import { createOpenAPIApp } from "@/utils/app-utils";
 
 import router from "./collection.index";
@@ -69,11 +71,36 @@ describe("collection router", () => {
       expect(getUserRecords).toHaveBeenCalledWith(userId);
       expect(result).toEqual([mockItem]);
     });
+  });
+  describe("post a new record", () => {
+    const ownerId = crypto.randomUUID();
 
-    describe("post a new record", () => {
-      it("should return the new record", async () => {
+    it("should return the new record", async () => {
+      const creationRequest: Omit<Item, "id"> = {
+        title: "Test Record",
+        artists: ["Test Artist"],
+        tracks: ["Test Track", "Test Track 2"],
+        price: 157,
+        format: "VINYL",
+        ownerId,
+        condition: "MINT",
+        notes: "Superb!",
+      };
 
+      const expectedResult: Item = {
+        ...creationRequest,
+        id: crypto.randomUUID(),
+      };
+
+      (createItem as Mock).mockResolvedValue(expectedResult);
+
+      const response = await client.collection.$post({
+        json: creationRequest,
       });
+      const result = await response.json();
+
+      expect(createItem).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(expectedResult);
     });
   });
 });
