@@ -18,10 +18,11 @@ const connection = postgres(env.DB_URL, {
   onnotice: env.DB_SEEDING ? () => { } : undefined,
 });
 
-if (env.NODE_ENV !== "production")
+if (env.NODE_ENV !== "production") {
   globalForDb.connection = connection;
+}
 
-const db = drizzle(connection, { schema, logger: true });
+const drizzleDb = drizzle(connection, { schema, logger: true });
 
-export type Database = typeof db;
-export default db;
+export type Database = typeof drizzleDb;
+export default drizzleDb;
