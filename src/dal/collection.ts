@@ -27,7 +27,7 @@ export async function getUserRecords(userId: string, db = drizzleDb): Promise<It
     .from(items)
     .where(eq(items.ownerId, userId));
 
-  return [mockItem];
+  return collection.map(mapToItemDto);
 }
 
 function mapToItemDto(item: InferItemSelect): Item {
