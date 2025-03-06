@@ -79,7 +79,6 @@ describe("collection router", () => {
       const creationRequest: Omit<Item, "id"> = {
         title: "Test Record",
         artists: ["Test Artist"],
-        tracks: ["Test Track", "Test Track 2"],
         price: 157,
         format: "VINYL",
         ownerId,

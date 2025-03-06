@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 
-import type { InferItemSelect } from "@/db/schema/items.table";
+import type { InferItemInsert, InferItemSelect } from "@/db/schema/items.table";
 import type { Item } from "@/models/item";
 
 import drizzleDb from "@/db";
@@ -29,7 +29,7 @@ export async function getUserRecords(userId: string, db = drizzleDb): Promise<It
   return collection.map(mapToItemDto);
 }
 
-export async function createItem(newItem: Item, db = drizzleDb): Promise<Item> {
+export async function createItem(newItem: InferItemInsert, db = drizzleDb): Promise<Item> {
   const insertedItem = await db
     .insert(items)
     .values({
@@ -45,7 +45,6 @@ function mapToItemDto(item: InferItemSelect): Item {
   // TODO finish mapping once the schema is complete
   const result: Item = {
     ...item,
-    tracks: [],
     price: Number(item.price),
     condition: item.condition ?? undefined,
   };

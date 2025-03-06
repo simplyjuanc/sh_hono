@@ -21,7 +21,6 @@ export interface Item {
   id: string;
   title: string;
   artists: string[];
-  tracks: string[];
   price: number;
   format: Format;
   ownerId: string;
@@ -33,7 +32,6 @@ export const itemSchema = z.object({
   id: z.string(),
   title: z.string(),
   artists: z.array(z.string()),
-  tracks: z.array(z.string()),
   price: z.number(),
   format: z.string(),
   ownerId: z.string(),

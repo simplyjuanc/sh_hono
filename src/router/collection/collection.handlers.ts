@@ -1,5 +1,6 @@
 import { StatusCodes } from "http-status-codes";
 
+import type { InferItemInsert } from "@/db/schema/items.table";
 import type { AppRouteHandler } from "@/types";
 
 import { createItem, getRecordById, getUserRecords } from "@/dal/collection";
@@ -22,9 +23,8 @@ export const getHandler: AppRouteHandler<GetRoute> = async (c) => {
 };
 
 export const postHandler: AppRouteHandler<PostRoute> = async (c) => {
-  const userId = c.var.user.id;
-  const newRecord = c.req.body;
-  const result = await createItem(userId, newRecord);
+  const newRecord: InferItemInsert = await c.req.json();
+  const result = await createItem(newRecord);
 
   c.var.logger.info(`New record created with id '${result.id}'.`);
   return c.json(result, StatusCodes.OK);
