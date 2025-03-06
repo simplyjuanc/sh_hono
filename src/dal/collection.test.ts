@@ -1,5 +1,4 @@
 import { eq } from "drizzle-orm";
-import { v4 as uuidV4 } from "uuid";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { Item } from "@/models/item";
@@ -10,11 +9,11 @@ import { items } from "@/db/schema";
 import { createItem, getRecordById, getUserRecords } from "./collection";
 
 describe("collection dal", () => {
-  const itemId = uuidV4();
+  const itemId = crypto.randomUUID();
 
   const mockItem: Item = {
     id: itemId,
-    ownerId: uuidV4(),
+    ownerId: crypto.randomUUID(),
     tracks: [],
     price: 0,
     condition: "FAIR",
@@ -60,7 +59,7 @@ describe("collection dal", () => {
 
   describe("getUserRecords", () => {
     it("should call the collection table with the correct user id", async () => {
-      const userId = uuidV4();
+      const userId = crypto.randomUUID();
 
       mockQueryFromDb();
       vi.spyOn(db.select().from(items), "where");
@@ -71,7 +70,7 @@ describe("collection dal", () => {
     });
 
     it("should return the correct records from the dal", async () => {
-      const userId = uuidV4();
+      const userId = crypto.randomUUID();
 
       mockQueryFromDb(mockItem);
 
@@ -81,7 +80,7 @@ describe("collection dal", () => {
     });
 
     it("should return an empty array if no records are found", async () => {
-      const userId = uuidV4();
+      const userId = crypto.randomUUID();
 
       mockQueryFromDb();
 
