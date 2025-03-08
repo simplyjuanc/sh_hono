@@ -1,8 +1,23 @@
-import { beforeEach, describe, it, vi } from "vitest";
+import type { Mock } from "vitest";
+
+import { testClient } from "hono/testing";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+import type { User, UserCredentials } from "@/models/user";
+
+import { createUser } from "@/dal/users";
+import { createOpenAPIApp } from "@/utils/app-utils";
+
+import router from "./users.index";
 
 vi.mock("@/dal/users", () => ({
   createUser: vi.fn(),
 }));
+
+const app = createOpenAPIApp();
+// @ts-expect-error deeply nested client
+// this comment can be deleted during software writing to enable type-sense
+const client: ReturnType<typeof testClient> = testClient(app.route("/", router));
 
 describe("users router", () => {
   beforeEach(() => {
@@ -10,14 +25,48 @@ describe("users router", () => {
   });
 
   describe("post new user", () => {
-    it("should return 200", async () => {
-      // test code here
+    const credentials: UserCredentials = {
+      email: "john.doe@acme.io",
+      password: crypto.randomUUID(),
+    };
+
+    it("should return 200 if successful", async () => {
+      const response = await client.users.$post({
+        json: credentials,
+      });
+
+      expect(response.ok).toBeTruthy();
     });
 
-    /* 
-    should call the dal with the user data
-    should return the user data
-    should return erro
-     */
+    it("should call the dal method with the user data", async () => {
+      const user: User = {
+        id: crypto.randomUUID(),
+        username: "cool-user-name",
+      };
+
+      (createUser as Mock).mockResolvedValueOnce(user);
+
+      await client.users.$post({
+        json: credentials,
+      });
+
+      expect(createUser).toHaveBeenCalledWith(credentials);
+    });
+
+    it("should return the user created in the database", async () => {
+      const user: User = {
+        id: crypto.randomUUID(),
+        username: "cool-user-name",
+      };
+
+      (createUser as Mock).mockResolvedValueOnce(user);
+
+      const response = await client.users.$post({
+        json: credentials,
+      });
+      const result = await response.json();
+
+      expect(result).toStrictEqual(user);
+    });
   });
 });
