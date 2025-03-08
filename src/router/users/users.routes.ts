@@ -3,7 +3,7 @@ import { StatusCodes } from "http-status-codes";
 
 import { jsonContent } from "@/helpers/json-validation";
 import { createErrorSchema } from "@/helpers/rest-helpers";
-import { userCredentialsSchema, userSchema } from "@/models/user";
+import { userCreationRequestSchema, userCreationResponseSchema, userSchema } from "@/models/user";
 
 const USERS_TAGS = ["Users"];
 
@@ -12,12 +12,12 @@ export const post = createRoute({
   method: "post",
   path: `/users`,
   request: {
-    body: jsonContent(userCredentialsSchema, "The user to create."),
+    body: jsonContent(userCreationRequestSchema, "The user to create."),
   },
   responses: {
-    [StatusCodes.OK.valueOf()]: jsonContent(userSchema, "Returns the newly created user."),
+    [StatusCodes.CREATED.valueOf()]: jsonContent(userCreationResponseSchema, "Returns the newly created user id."),
     [StatusCodes.BAD_REQUEST.valueOf()]: jsonContent(
-      createErrorSchema(userCredentialsSchema),
+      createErrorSchema(userSchema),
       "The request body is invalid.",
     ),
   },

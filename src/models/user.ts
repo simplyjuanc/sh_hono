@@ -1,14 +1,11 @@
 import { z } from "zod";
 
-export const userCredentialsSchema = z.object({
-  email: z.string().email(),
-  password: z.string(),
-});
-
 export const userSchema = z.object({
   id: z.string().uuid(),
+  email: z.string().email(),
   username: z.string(),
   firstName: z.string().optional(),
+  middleName: z.string().optional(),
   lastName: z.string().optional(),
 }).openapi({
   type: "object",
@@ -16,7 +13,11 @@ export const userSchema = z.object({
   description: "A user of the application",
 });
 
-export type User = z.infer<typeof userSchema>;
-export type UserCredentials = z.infer<typeof userCredentialsSchema>;
+export const userCreationRequestSchema = z.object({
+  password: z.string(),
+}).merge(userSchema).omit({ id: true });
 
-export type UserComplete = User & UserCredentials;
+export const userCreationResponseSchema = z.object({ userId: z.string() });
+
+export type UserCreationRequest = z.infer<typeof userCreationRequestSchema>;
+export type User = z.infer<typeof userSchema>;

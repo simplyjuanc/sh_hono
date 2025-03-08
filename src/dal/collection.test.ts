@@ -5,6 +5,7 @@ import type { Item } from "@/models/item";
 
 import db from "@/db";
 import { items } from "@/db/schema";
+import { mockInsertIntoDb, mockQueryFromDb } from "@/utils/test-utils";
 
 import { createItem, getRecordById, getUserRecords } from "./collection";
 
@@ -27,7 +28,7 @@ describe("collection dal", () => {
 
   describe("getRecordById", () => {
     it("should call the collection table with the correct if", async () => {
-      mockQueryFromDb(mockItemBase);
+      mockQueryFromDb(db, mockItemBase);
 
       vi.spyOn(db.select().from(items), "where");
 
@@ -38,7 +39,7 @@ describe("collection dal", () => {
     });
 
     it("should return the correct record from the dal", async () => {
-      mockQueryFromDb(mockItemBase);
+      mockQueryFromDb(db, mockItemBase);
 
       const result = await getRecordById(itemId);
 
@@ -60,7 +61,7 @@ describe("collection dal", () => {
     it("should call the collection table with the correct user id", async () => {
       const userId = crypto.randomUUID();
 
-      mockQueryFromDb();
+      mockQueryFromDb(db);
       vi.spyOn(db.select().from(items), "where");
 
       await getUserRecords(userId);
@@ -71,7 +72,7 @@ describe("collection dal", () => {
     it("should return the correct records from the dal", async () => {
       const userId = crypto.randomUUID();
 
-      mockQueryFromDb(mockItemBase);
+      mockQueryFromDb(db, mockItemBase);
 
       const result = await getUserRecords(userId);
 
@@ -81,7 +82,7 @@ describe("collection dal", () => {
     it("should return an empty array if no records are found", async () => {
       const userId = crypto.randomUUID();
 
-      mockQueryFromDb();
+      mockQueryFromDb(db);
 
       const result = await getUserRecords(userId);
 
@@ -101,7 +102,7 @@ describe("collection dal", () => {
         price: mockItemBase.price.toString(),
       };
 
-      mockInsertIntoDb(mockItemBase);
+      mockInsertIntoDb(db, mockItemBase);
       vi.spyOn(db.insert(items), "values");
 
       await createItem(mockItemInsertAttributes);
@@ -110,26 +111,10 @@ describe("collection dal", () => {
     });
 
     it("should return the correct record from the dal", async () => {
-      mockInsertIntoDb(mockItemBase);
+      mockInsertIntoDb(db, mockItemBase);
       const result = await createItem(mockItemInsertAttributes);
 
       expect(result).toEqual(mockItemBase);
     });
   });
 });
-
-function mockQueryFromDb(mockResult?: Item) {
-  db.select = vi.fn().mockReturnValue({
-    from: vi.fn().mockReturnValue({
-      where: vi.fn().mockResolvedValue(mockResult ? [mockResult] : []),
-    }),
-  });
-}
-
-function mockInsertIntoDb(mockItem: Item) {
-  db.insert = vi.fn().mockReturnValue({
-    values: vi.fn().mockReturnValue({
-      returning: vi.fn().mockResolvedValue([mockItem]),
-    }),
-  });
-}
