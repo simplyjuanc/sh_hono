@@ -47,19 +47,5 @@ describe("users dal", () => {
       expect(response.lastName).toBe(userCredentials.lastName);
       expect(response.username).toBe(userCredentials.username);
     });
-
-    it("should throw if the password or email validation fail", async () => {
-      db.insert = vi.fn().mockReturnValue({
-        values: vi.fn().mockReturnValue({
-          returning: vi.fn().mockResolvedValue([]),
-        }),
-      });
-    });
-
-    it("should throw when the username is already taken", () => {
-    });
-
-    it("should hash the password on update or creation", () => {
-    });
   });
 });

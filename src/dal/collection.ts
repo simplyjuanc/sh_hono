@@ -10,13 +10,10 @@ export async function getRecordById(id: string, db = drizzleDb): Promise<Item> {
   const item = await db
     .select()
     .from(items)
-    .where(eq(items.id, id));
+    .where(eq(items.id, id))
+    .then(([result]) => result);
 
-  if (item.length === 0) {
-    throw new Error("Record not found");
-  }
-
-  return mapToItemDto(item[0]);
+  return mapToItemDto(item);
 }
 
 export async function getUserRecords(userId: string, db = drizzleDb): Promise<Item[]> {
@@ -36,17 +33,16 @@ export async function createItem(newItem: InferItemInsert, db = drizzleDb): Prom
       ...newItem,
       price: newItem.price.toString(),
     })
-    .returning();
+    .returning()
+    .then(([result]) => result);
 
-  return mapToItemDto(insertedItem[0]);
+  return mapToItemDto(insertedItem);
 }
 
 function mapToItemDto(item: InferItemSelect): Item {
-  // TODO finish mapping once the schema is complete
-  const result: Item = {
+  return {
     ...item,
     price: Number(item.price),
-    condition: item.condition ?? "UNKNOWN", // default to "POOR" if condition is null
+    condition: item.condition ?? "UNKNOWN", // default to "UNKNOWN" if condition is null
   };
-  return result;
 }
