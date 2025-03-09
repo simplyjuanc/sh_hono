@@ -1,5 +1,6 @@
 import type { Mock } from "vitest";
 
+import { hash } from "bcrypt";
 import { testClient } from "hono/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -12,6 +13,10 @@ import router from "./users.index";
 
 vi.mock("@/dal/users", () => ({
   createUser: vi.fn(),
+}));
+
+vi.mock("bcrypt", () => ({
+  hash: vi.fn(),
 }));
 
 const app = createOpenAPIApp();
@@ -31,6 +36,12 @@ describe("users router", () => {
       username: "super-cool-username",
     };
 
+    const user: User = {
+      id: crypto.randomUUID(),
+      username: "super-cool-username",
+      email: "john.doe@acme.io",
+    };
+
     it("should return 200 if successful", async () => {
       const response = await client.users.$post({
         json: credentials,
@@ -40,28 +51,17 @@ describe("users router", () => {
     });
 
     it("should call the dal method with the user data", async () => {
-      const user: User = {
-        id: crypto.randomUUID(),
-        username: "cool-user-name",
-        email: "jdaiod@jodisap.com",
-      };
-
       (createUser as Mock).mockResolvedValueOnce(user);
+      (hash as Mock).mockResolvedValueOnce("hashed-password");
 
       await client.users.$post({
         json: credentials,
       });
 
-      expect(createUser).toHaveBeenCalledWith(credentials);
+      expect(createUser).toHaveBeenCalledWith({ ...credentials, password: "hashed-password" });
     });
 
     it("should return the user created in the database", async () => {
-      const user: User = {
-        id: crypto.randomUUID(),
-        username: "cool-user-name",
-        email: "john.down@acme.io",
-      };
-
       (createUser as Mock).mockResolvedValueOnce(user);
 
       const response = await client.users.$post({
@@ -70,6 +70,20 @@ describe("users router", () => {
       const result = await response.json();
 
       expect(result).toStrictEqual({ userId: user.id });
+    });
+
+    it("should hash the password before creating the user", async () => {
+      (createUser as Mock).mockResolvedValueOnce(user);
+      (hash as Mock).mockResolvedValueOnce("hashed-password");
+
+      await client.users.$post({
+        json: credentials,
+      });
+
+      expect(createUser).toHaveBeenCalledExactlyOnceWith({
+        ...credentials,
+        password: "hashed-password",
+      });
     });
   });
 });
