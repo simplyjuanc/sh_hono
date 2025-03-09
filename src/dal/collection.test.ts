@@ -34,7 +34,6 @@ describe("collection dal", () => {
 
       await getRecordById(itemId);
 
-      // expect(db.select).toHaveBeenCalledWith();
       expect(db.select().from(items).where).toHaveBeenCalledWith(eq(items.id, itemId));
     });
 
