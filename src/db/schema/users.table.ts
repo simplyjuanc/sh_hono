@@ -26,7 +26,7 @@ export const userRelations = relations(users, ({ many }) => ({
   ownedItems: many(items),
 }));
 
-export type InferItemSelect = InferSelectModel<typeof users>;
-export type InferItemInsert = InferInsertModel<typeof users>;
+export type InferUserSelect = InferSelectModel<typeof users>;
+export type InferUserInsert = InferInsertModel<typeof users>;
 
 export default users;

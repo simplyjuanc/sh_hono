@@ -1,3 +1,4 @@
+import type { InferUserSelect } from "@/db/schema/users.table";
 import type { User, UserCreationRequest } from "@/models/user";
 
 import drizzleDb from "@/db";
@@ -14,5 +15,16 @@ export async function createUser(credentials: UserCreationRequest, db = drizzleD
     lastName,
   }).returning().then(([result]) => result);
 
-  return createdUser;
+  return mapToUserDto(createdUser);
+}
+
+function mapToUserDto(item: InferUserSelect): User {
+  return {
+    email: item.email,
+    id: item.id,
+    username: item.username,
+    firstName: item.firstName ?? undefined,
+    middleName: item.middleName ?? undefined,
+    lastName: item.lastName ?? undefined,
+  };
 }

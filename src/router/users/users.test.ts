@@ -3,7 +3,7 @@ import type { Mock } from "vitest";
 import { testClient } from "hono/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { User } from "@/models/user";
+import type { User, UserCreationRequest } from "@/models/user";
 
 import { createUser } from "@/dal/users";
 import { createOpenAPIApp } from "@/utils/app-utils";
@@ -25,7 +25,7 @@ describe("users router", () => {
   });
 
   describe("post new user", () => {
-    const credentials: User = {
+    const credentials: UserCreationRequest = {
       email: "john.doe@acme.io",
       password: crypto.randomUUID(),
       username: "super-cool-username",
@@ -43,6 +43,7 @@ describe("users router", () => {
       const user: User = {
         id: crypto.randomUUID(),
         username: "cool-user-name",
+        email: "jdaiod@jodisap.com",
       };
 
       (createUser as Mock).mockResolvedValueOnce(user);
