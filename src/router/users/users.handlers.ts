@@ -9,7 +9,7 @@ import { hashUserPassword } from "@/utils/auth-utils";
 import type { PostRoute } from "./users.routes";
 
 export const postHandler: AppRouteHandler<PostRoute> = async (c) => {
-  const userCredentials: UserCreationRequest = await c.req.json();
+  const userCredentials = await c.req.json<UserCreationRequest>();
   const hashedPassword = await hashUserPassword(userCredentials.password);
 
   const result = await createUser({

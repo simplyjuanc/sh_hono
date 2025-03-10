@@ -23,7 +23,7 @@ export const getHandler: AppRouteHandler<GetRoute> = async (c) => {
 };
 
 export const postHandler: AppRouteHandler<PostRoute> = async (c) => {
-  const newRecord: InferItemInsert = await c.req.json();
+  const newRecord = await c.req.json<InferItemInsert>();
   const result = await createItem(newRecord);
 
   c.var.logger.info(`New record created with id '${result.id}'.`);
