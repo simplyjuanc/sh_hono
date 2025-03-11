@@ -5,10 +5,10 @@ import type { Item } from "@/models/item";
 
 import db from "@/db";
 import { items } from "@/db/schema";
-import { mockFailedQueryFromDb, mockInsertIntoDb, mockQueryFromDb } from "@/utils/test-utils";
+import { EntityNotFoundError } from "@/models/errors/dal-errors";
+import { mockInsertIntoDb, mockQueryFailureFromDb, mockQuerySuccessFromDb } from "@/utils/test-utils";
 
 import { createItem, getRecordById, getUserRecords } from "./collection";
-import { EntityNotFoundError } from "@/models/errors/dal-errors";
 
 describe("collection dal", () => {
   const itemId = crypto.randomUUID();
@@ -29,7 +29,7 @@ describe("collection dal", () => {
 
   describe("getRecordById", () => {
     it("should call the collection table with the correct if", async () => {
-      mockQueryFromDb(db, mockItemBase);
+      mockQuerySuccessFromDb(db, mockItemBase);
 
       vi.spyOn(db.select().from(items), "where");
 
@@ -39,7 +39,7 @@ describe("collection dal", () => {
     });
 
     it("should return the correct record from the dal", async () => {
-      mockQueryFromDb(db, mockItemBase);
+      mockQuerySuccessFromDb(db, mockItemBase);
 
       const result = await getRecordById(itemId);
 
@@ -47,8 +47,8 @@ describe("collection dal", () => {
     });
 
     it("should throw an error if record is not found", async () => {
-      mockFailedQueryFromDb(db, new EntityNotFoundError("Record", itemId));
-      
+      mockQueryFailureFromDb(db, new EntityNotFoundError("Record", itemId));
+
       await expect(getRecordById(itemId)).rejects.toThrow(EntityNotFoundError);
     });
   });
@@ -57,7 +57,7 @@ describe("collection dal", () => {
     it("should call the collection table with the correct user id", async () => {
       const userId = crypto.randomUUID();
 
-      mockQueryFromDb(db);
+      mockQuerySuccessFromDb(db);
       vi.spyOn(db.select().from(items), "where");
 
       await getUserRecords(userId);
@@ -68,7 +68,7 @@ describe("collection dal", () => {
     it("should return the correct records from the dal", async () => {
       const userId = crypto.randomUUID();
 
-      mockQueryFromDb(db, mockItemBase);
+      mockQuerySuccessFromDb(db, mockItemBase);
 
       const result = await getUserRecords(userId);
 
@@ -78,7 +78,7 @@ describe("collection dal", () => {
     it("should return an empty array if no records are found", async () => {
       const userId = crypto.randomUUID();
 
-      mockQueryFromDb(db);
+      mockQuerySuccessFromDb(db);
 
       const result = await getUserRecords(userId);
 

@@ -24,17 +24,18 @@ export const userSignupHandler: AppRouteHandler<UserSignUpRoute> = async (c) => 
 
 export const userLoginHandler: AppRouteHandler<UserLoginRoute> = async (c) => {
   const { email, password } = await c.req.json<UserCredentials>();
-
   if (!email) {
     return c.json({
       message: ReasonPhrases.BAD_REQUEST,
     }, StatusCodes.BAD_REQUEST);
   }
+
   try {
     const userCredentials = await getUserCredentialsFromEmail(email);
     if (!userCredentials) {
       return c.json({ message: ReasonPhrases.BAD_REQUEST }, StatusCodes.BAD_REQUEST);
     }
+    c.var.logger.info({ userCredentials });
 
     const isVerified = await verifyUserPassword(password, userCredentials.password);
     if (isVerified) {
