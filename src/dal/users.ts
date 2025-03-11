@@ -5,13 +5,12 @@ import drizzleDb from "@/db";
 import { users } from "@/db/schema";
 
 export async function createUser(credentials: UserCreationRequest, db = drizzleDb): Promise<User> {
-  const { email, username, password, firstName, middleName, lastName } = credentials;
+  const { email, username, password, firstName, lastName } = credentials;
   const createdUser = await db.insert(users).values({
     email,
     password,
     username: username ?? "",
     firstName: firstName ?? "",
-    middleName: middleName ?? "",
     lastName: lastName ?? "",
   }).returning().then(([result]) => result);
 
@@ -39,7 +38,6 @@ function mapToUserDto(item: InferUserSelect): User {
     id: item.id,
     username: item.username,
     firstName: item.firstName ?? undefined,
-    middleName: item.middleName ?? undefined,
     lastName: item.lastName ?? undefined,
   };
 }

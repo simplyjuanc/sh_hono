@@ -13,7 +13,6 @@ const users = createTable("users", {
   email: text("email").notNull().unique(),
   password: text("password").notNull(),
   firstName: text("first_name"),
-  middleName: text("middle_name"),
   lastName: text("last_name"),
   createdAt: timestamp("created_at", { mode: "string" }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { mode: "string" })

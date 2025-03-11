@@ -35,7 +35,6 @@ describe("users dal", () => {
       expect(db.insert(users).values).toHaveBeenCalledWith({
         ...userCredentials,
         firstName: "",
-        middleName: "",
         lastName: "",
       });
     });
@@ -48,7 +47,6 @@ describe("users dal", () => {
 
       expect(response.email).toBe(userCredentials.email);
       expect(response.firstName).toBe(userCredentials.firstName);
-      expect(response.middleName).toBe(userCredentials.middleName);
       expect(response.lastName).toBe(userCredentials.lastName);
       expect(response.username).toBe(userCredentials.username);
     });

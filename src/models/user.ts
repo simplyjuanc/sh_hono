@@ -7,7 +7,6 @@ export const userSchema = z.object({
   email: z.string().email(),
   username: z.string().optional(),
   firstName: z.string().optional(),
-  middleName: z.string().optional(),
   lastName: z.string().optional(),
 }).openapi({
   type: "object",
