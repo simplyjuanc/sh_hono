@@ -40,5 +40,5 @@ export const userLoginRoute = createRoute({
   },
 });
 
-export type UserSignUpRoute = typeof userSignUpRoute;
+export type UserSignupRoute = typeof userSignUpRoute;
 export type UserLoginRoute = typeof userLoginRoute;

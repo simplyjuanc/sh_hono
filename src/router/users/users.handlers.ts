@@ -7,9 +7,9 @@ import { createUser, getUserCredentialsFromEmail } from "@/dal/users";
 import { EntityNotFoundError } from "@/models/errors/dal-errors";
 import { hashUserPassword, verifyUserPassword } from "@/utils/auth-utils";
 
-import type { UserLoginRoute, UserSignUpRoute } from "./users.routes";
+import type { UserLoginRoute, UserSignupRoute } from "./users.routes";
 
-export const userSignupHandler: AppRouteHandler<UserSignUpRoute> = async (c) => {
+export const userSignupHandler: AppRouteHandler<UserSignupRoute> = async (c) => {
   const userCredentials = await c.req.json<UserCreationRequest>();
   const hashedPassword = await hashUserPassword(userCredentials.password);
 
@@ -35,11 +35,10 @@ export const userLoginHandler: AppRouteHandler<UserLoginRoute> = async (c) => {
     if (!userCredentials) {
       return c.json({ message: ReasonPhrases.BAD_REQUEST }, StatusCodes.BAD_REQUEST);
     }
-    c.var.logger.info({ userCredentials });
 
     const isVerified = await verifyUserPassword(password, userCredentials.password);
     if (isVerified) {
-      return c.json(StatusCodes.NO_CONTENT);
+      return c.newResponse(null, StatusCodes.NO_CONTENT);
     }
     else {
       return c.json({ message: ReasonPhrases.BAD_REQUEST }, StatusCodes.BAD_REQUEST);
