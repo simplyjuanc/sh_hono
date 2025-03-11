@@ -1,5 +1,5 @@
 import type { InferUserSelect } from "@/db/schema/users.table";
-import type { User, UserCreationRequest } from "@/models/user";
+import type { User, UserCreationRequest, UserCredentials } from "@/models/user";
 
 import drizzleDb from "@/db";
 import { users } from "@/db/schema";
@@ -8,14 +8,29 @@ export async function createUser(credentials: UserCreationRequest, db = drizzleD
   const { email, username, password, firstName, middleName, lastName } = credentials;
   const createdUser = await db.insert(users).values({
     email,
-    username,
     password,
-    firstName,
-    middleName,
-    lastName,
+    username: username ?? "",
+    firstName: firstName ?? "",
+    middleName: middleName ?? "",
+    lastName: lastName ?? "",
   }).returning().then(([result]) => result);
 
   return mapToUserDto(createdUser);
+}
+
+export async function getUserCredentialsFromEmail(email: string): Promise<UserCredentials | undefined> {
+  return {
+    email,
+    password: "ss",
+    username: "username",
+  };
+}
+export async function getUserCredentialsFromUsername(username: string): Promise<UserCredentials | undefined> {
+  return {
+    email: "t",
+    password: "ss",
+    username,
+  };
 }
 
 function mapToUserDto(item: InferUserSelect): User {

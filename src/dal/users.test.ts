@@ -32,7 +32,12 @@ describe("users dal", () => {
 
       await createUser(userCredentials);
 
-      expect(db.insert(users).values).toHaveBeenCalledWith(userCredentials);
+      expect(db.insert(users).values).toHaveBeenCalledWith({
+        ...userCredentials,
+        firstName: "",
+        middleName: "",
+        lastName: "",
+      });
     });
 
     it("should return a complete user interface in the response", async () => {

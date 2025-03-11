@@ -7,7 +7,7 @@ import { userCreationRequestSchema, userCredentialsSchema, userSchema } from "@/
 
 const USERS_TAGS = ["Users"];
 
-export const post = createRoute({
+export const userSignUpRoute = createRoute({
   tags: USERS_TAGS,
   description: "Create a new user.",
   method: "post",
@@ -24,7 +24,7 @@ export const post = createRoute({
   },
 });
 
-export const get = createRoute({
+export const userLoginRoute = createRoute({
   tags: USERS_TAGS,
   description: "User log-in",
   method: "post",
@@ -40,5 +40,5 @@ export const get = createRoute({
   },
 });
 
-export type PostRoute = typeof post;
-export type GetRoute = typeof get;
+export type UserSignUpRoute = typeof userSignUpRoute;
+export type UserLoginRoute = typeof userLoginRoute;
