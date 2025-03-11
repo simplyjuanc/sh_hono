@@ -5,9 +5,10 @@ import type { Item } from "@/models/item";
 
 import db from "@/db";
 import { items } from "@/db/schema";
-import { mockInsertIntoDb, mockQueryFromDb } from "@/utils/test-utils";
+import { mockFailedQueryFromDb, mockInsertIntoDb, mockQueryFromDb } from "@/utils/test-utils";
 
 import { createItem, getRecordById, getUserRecords } from "./collection";
+import { EntityNotFoundError } from "@/models/errors/dal-errors";
 
 describe("collection dal", () => {
   const itemId = crypto.randomUUID();
@@ -46,13 +47,9 @@ describe("collection dal", () => {
     });
 
     it("should throw an error if record is not found", async () => {
-      db.select = vi.fn().mockReturnValue({
-        from: vi.fn().mockReturnValue({
-          where: vi.fn().mockRejectedValue(new Error("Record not found")),
-        }),
-      });
-
-      await expect(getRecordById(itemId)).rejects.toThrow("Record not found");
+      mockFailedQueryFromDb(db, new EntityNotFoundError("Record", itemId));
+      
+      await expect(getRecordById(itemId)).rejects.toThrow(EntityNotFoundError);
     });
   });
 

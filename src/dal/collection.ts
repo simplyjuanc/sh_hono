@@ -27,16 +27,14 @@ export async function getUserRecords(userId: string, db = drizzleDb): Promise<It
 }
 
 export async function createItem(newItem: InferItemInsert, db = drizzleDb): Promise<Item> {
-  const insertedItem = await db
+  return await db
     .insert(items)
     .values({
       ...newItem,
       price: newItem.price.toString(),
     })
     .returning()
-    .then(([result]) => result);
-
-  return mapToItemDto(insertedItem);
+    .then(([result]) => mapToItemDto(result));
 }
 
 function mapToItemDto(item: InferItemSelect): Item {
