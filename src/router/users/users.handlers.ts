@@ -5,7 +5,7 @@ import type { AppRouteHandler } from "@/types";
 
 import { createUser, getUserCredentialsFromEmail, getUserCredentialsFromUsername } from "@/dal/users";
 import { EntityNotFoundError } from "@/models/errors/dal-errors";
-import { hashUserPassword } from "@/utils/auth-utils";
+import { hashUserPassword, verifyUserPassword } from "@/utils/auth-utils";
 
 import type { UserLoginRoute, UserSignUpRoute } from "./users.routes";
 
@@ -23,7 +23,7 @@ export const userSignupHandler: AppRouteHandler<UserSignUpRoute> = async (c) => 
 };
 
 export const userLoginHandler: AppRouteHandler<UserLoginRoute> = async (c) => {
-  const { email, username } = await c.req.json<UserCredentials>();
+  const { email, username, password } = await c.req.json<UserCredentials>();
 
   if (!email && !username) {
     return c.json({
@@ -40,7 +40,14 @@ export const userLoginHandler: AppRouteHandler<UserLoginRoute> = async (c) => {
       return c.json({ message: ReasonPhrases.BAD_REQUEST }, StatusCodes.BAD_REQUEST);
     }
 
-    return c.json(StatusCodes.NO_CONTENT);
+    const isVerified = await verifyUserPassword(password, userCredentials.password);
+
+    if (isVerified) {
+      return c.json(StatusCodes.NO_CONTENT);
+    }
+    else {
+      return c.json({ message: ReasonPhrases.BAD_REQUEST }, StatusCodes.BAD_REQUEST);
+    }
   }
   catch (e) {
     if (e instanceof EntityNotFoundError) {

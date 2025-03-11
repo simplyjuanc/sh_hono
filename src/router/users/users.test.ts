@@ -1,6 +1,6 @@
 import type { Mock } from "vitest";
 
-import { hash } from "bcrypt";
+import { compare, hash } from "bcrypt";
 import { testClient } from "hono/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -20,6 +20,7 @@ vi.mock("@/dal/users", () => ({
 
 vi.mock("bcrypt", () => ({
   hash: vi.fn(),
+  compare: vi.fn(),
 }));
 
 const app = createOpenAPIApp();
@@ -98,36 +99,7 @@ describe("users router", () => {
       expect(response.status).toBe(400);
     });
 
-    it("should return a successful response if the email and password combination exist", async () => {
-      (getUserCredentialsFromEmail as Mock).mockResolvedValue({
-        email: "test",
-        password: "pass",
-      });
-
-      const response = await client.users["log-in"].$post({
-        json: { email: "user@user.com", password: "any-password" },
-      });
-
-      expect(response.ok).toBeTruthy();
-      expect(response.status).toBe(200);
-    });
-
-    it("should return a successful response if the username and password combination exist", async () => {
-      (getUserCredentialsFromUsername as Mock).mockResolvedValue({
-        email: "test",
-        username: "user",
-        password: "pass",
-      });
-
-      const response = await client.users["log-in"].$post({
-        json: { username: "user", password: "any-password" },
-      });
-
-      expect(response.ok).toBeTruthy();
-      expect(response.status).toBe(200);
-    });
-
-    it("should throw the same error whether it cannot find the email or the password is wrong", async () => {
+    it("should throw if it cannot find the email or the password is wrong", async () => {
       (getUserCredentialsFromEmail as Mock).mockRejectedValue(new EntityNotFoundError("user", "any"));
 
       const response = await client.users["log-in"].$post({
@@ -138,13 +110,51 @@ describe("users router", () => {
       expect(response.status).toBe(400);
     });
 
-    it("should throw the same error whether it cannot find the username or the password is wrong", async () => {
+    it("should throw if it cannot find the username or the password is wrong", async () => {
       (getUserCredentialsFromUsername as Mock).mockRejectedValue(new EntityNotFoundError("user", "any"));
 
       const response = await client.users["log-in"].$post({
         json: { username: "user", password: "any-password" },
       });
 
+      expect(response.ok).toBeFalsy();
+      expect(response.status).toBe(400);
+    });
+
+    it("should return successful response if verifies the username/password combination cryptographically", async () => {
+      const password = "any-password";
+
+      (getUserCredentialsFromUsername as Mock).mockResolvedValue({
+        email: "test",
+        username: "user",
+        password,
+      });
+      (compare as Mock).mockResolvedValue(true);
+
+      const response = await client.users["log-in"].$post({
+        json: { username: "user", password },
+      });
+
+      expect(compare).toHaveBeenCalledExactlyOnceWith(password, password);
+      expect(response.ok).toBeTruthy();
+      expect(response.status).toBe(200);
+    });
+
+    it("should throw if it fails to verify the password cryptographically", async () => {
+      const password = "any-password";
+
+      (getUserCredentialsFromUsername as Mock).mockResolvedValue({
+        email: "test",
+        username: "user",
+        password,
+      });
+      (compare as Mock).mockResolvedValue(false);
+
+      const response = await client.users["log-in"].$post({
+        json: { username: "user", password },
+      });
+
+      expect(compare).toHaveBeenCalledExactlyOnceWith(password, password);
       expect(response.ok).toBeFalsy();
       expect(response.status).toBe(400);
     });
