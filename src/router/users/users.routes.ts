@@ -30,7 +30,7 @@ export const userLoginRoute = createRoute({
   method: "post",
   path: "/users/log-in",
   request: {
-    body: jsonContent(userCredentialsSchema, "Username/email and password."),
+    body: jsonContent(userCredentialsSchema, "Email and password."),
   },
   responses: {
     [StatusCodes.NO_CONTENT.valueOf()]: { description: "Log-in success." },

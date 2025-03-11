@@ -12,12 +12,10 @@ describe("users dal", () => {
   const userCredentials: UserCreationRequest = {
     email: "super-cool-email@email.com",
     password: "pas5235sw@road102y9j",
-    username: "curious-agitator",
   };
 
   const mockUser: User = {
     id: crypto.randomUUID(),
-    username: "curious-agitator",
     email: "super-cool-email@email.com",
   };
 
@@ -48,7 +46,6 @@ describe("users dal", () => {
       expect(response.email).toBe(userCredentials.email);
       expect(response.firstName).toBe(userCredentials.firstName);
       expect(response.lastName).toBe(userCredentials.lastName);
-      expect(response.username).toBe(userCredentials.username);
     });
   });
 });

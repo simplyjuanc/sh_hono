@@ -3,7 +3,7 @@ import { ReasonPhrases, StatusCodes } from "http-status-codes";
 import type { UserCreationRequest, UserCredentials } from "@/models/user";
 import type { AppRouteHandler } from "@/types";
 
-import { createUser, getUserCredentialsFromEmail, getUserCredentialsFromUsername } from "@/dal/users";
+import { createUser, getUserCredentialsFromEmail } from "@/dal/users";
 import { EntityNotFoundError } from "@/models/errors/dal-errors";
 import { hashUserPassword, verifyUserPassword } from "@/utils/auth-utils";
 
@@ -23,25 +23,20 @@ export const userSignupHandler: AppRouteHandler<UserSignUpRoute> = async (c) => 
 };
 
 export const userLoginHandler: AppRouteHandler<UserLoginRoute> = async (c) => {
-  const { email, username, password } = await c.req.json<UserCredentials>();
+  const { email, password } = await c.req.json<UserCredentials>();
 
-  if (!email && !username) {
+  if (!email) {
     return c.json({
       message: ReasonPhrases.BAD_REQUEST,
     }, StatusCodes.BAD_REQUEST);
   }
   try {
-    const userCredentials = email
-      ? await getUserCredentialsFromEmail(email)
-      : await getUserCredentialsFromUsername(username!);
-    // username assumed to exist due to previous check
-
+    const userCredentials = await getUserCredentialsFromEmail(email);
     if (!userCredentials) {
       return c.json({ message: ReasonPhrases.BAD_REQUEST }, StatusCodes.BAD_REQUEST);
     }
 
     const isVerified = await verifyUserPassword(password, userCredentials.password);
-
     if (isVerified) {
       return c.json(StatusCodes.NO_CONTENT);
     }
