@@ -33,10 +33,8 @@ export const userLoginRoute = createRoute({
     body: jsonContent(userCredentialsSchema, "Email and password."),
   },
   responses: {
-    [StatusCodes.NO_CONTENT.valueOf()]: { description: "Log-in success." },
+    [StatusCodes.OK.valueOf()]: { description: "Log-in success." },
     [StatusCodes.BAD_REQUEST.valueOf()]: jsonContent(createErrorSchema(userCredentialsSchema), "Missing credential."),
-    [StatusCodes.NOT_FOUND.valueOf()]: jsonContent(createErrorSchema(userCredentialsSchema), "User not found."),
-    [StatusCodes.UNAUTHORIZED.valueOf()]: jsonContent(createErrorSchema(userCredentialsSchema), "Wrong user/password combination."),
   },
 });
 

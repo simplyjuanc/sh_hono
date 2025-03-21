@@ -2,6 +2,7 @@ import type { Mock } from "vitest";
 
 import { compare, hash } from "bcrypt";
 import { testClient } from "hono/testing";
+import { StatusCodes } from "http-status-codes";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { User, UserCreationRequest } from "@/models/user";
@@ -30,7 +31,7 @@ describe("users router", () => {
     vi.resetAllMocks();
   });
 
-  describe("post new user", () => {
+  describe("user sign up", () => {
     const credentials: UserCreationRequest = {
       email: "john.doe@acme.io",
       password: crypto.randomUUID(),
@@ -60,7 +61,7 @@ describe("users router", () => {
       expect(createUser).toHaveBeenCalledWith({ ...credentials, password: "hashed-password" });
     });
 
-    it("should return the user created in the database", async () => {
+    it("should return an empty response", async () => {
       (createUser as Mock).mockResolvedValueOnce(user);
 
       const response = await client.users.$post({
@@ -68,7 +69,8 @@ describe("users router", () => {
       });
       const result = await response.json();
 
-      expect(result).toStrictEqual({});
+      expect(response.status).toBe(StatusCodes.CREATED);
+      expect(result).toBeNull();
     });
 
     it("should hash the password before creating the user", async () => {
@@ -103,10 +105,10 @@ describe("users router", () => {
       });
 
       expect(response.ok).toBeFalsy();
-      expect(response.status).toBe(400);
+      expect(response.status).toBe(StatusCodes.BAD_REQUEST);
     });
 
-    it("should return successful response if verifies the username/password combination cryptographically", async () => {
+    it("should return successful response if verifies the email/password combination cryptographically", async () => {
       const password = "any-password";
 
       (getUserCredentialsFromEmail as Mock).mockResolvedValue({
@@ -121,7 +123,7 @@ describe("users router", () => {
 
       expect(compare).toHaveBeenCalledExactlyOnceWith(password, password);
       expect(response.ok).toBeTruthy();
-      expect(response.status).toBe(200);
+      expect(response.status).toBe(StatusCodes.OK);
     });
 
     it("should throw if it fails to verify the password cryptographically", async () => {

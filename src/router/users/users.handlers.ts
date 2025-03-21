@@ -1,11 +1,13 @@
+import { setSignedCookie } from "hono/cookie";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
 
 import type { UserCreationRequest, UserCredentials } from "@/models/user";
 import type { AppRouteHandler } from "@/types";
 
 import { createUser, getUserCredentialsFromEmail } from "@/dal/users";
+import env from "@/env";
 import { EntityNotFoundError } from "@/models/errors/dal-errors";
-import { hashUserPassword, verifyUserPassword } from "@/utils/auth-utils";
+import { hashUserPassword, ONE_HOUR_IN_SECONDS, signJwtToken, verifyUserPassword } from "@/utils/auth-utils";
 
 import type { UserLoginRoute, UserSignupRoute } from "./users.routes";
 
@@ -17,9 +19,8 @@ export const userSignupHandler: AppRouteHandler<UserSignupRoute> = async (c) => 
     ...userCredentials,
     password: hashedPassword,
   });
-
   c.var.logger.info(`User with id '${result}' has been created.`);
-  return c.json({}, StatusCodes.CREATED);
+  return c.json(null, StatusCodes.CREATED);
 };
 
 export const userLoginHandler: AppRouteHandler<UserLoginRoute> = async (c) => {
@@ -37,12 +38,19 @@ export const userLoginHandler: AppRouteHandler<UserLoginRoute> = async (c) => {
     }
 
     const isVerified = await verifyUserPassword(password, userCredentials.password);
-    if (isVerified) {
-      return c.newResponse(null, StatusCodes.NO_CONTENT);
-    }
-    else {
+    if (!isVerified) {
       return c.json({ message: ReasonPhrases.BAD_REQUEST }, StatusCodes.BAD_REQUEST);
     }
+
+    const jwt = await signJwtToken(userCredentials.email);
+
+    await setSignedCookie(c, "jwt", jwt, env.SESSION_SECRET, {
+      httpOnly: true,
+      maxAge: ONE_HOUR_IN_SECONDS,
+      sameSite: "strict",
+    });
+
+    return c.json(undefined, StatusCodes.OK);
   }
   catch (e) {
     if (e instanceof EntityNotFoundError) {
