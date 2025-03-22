@@ -1,5 +1,6 @@
 import type { Mock } from "vitest";
 
+import { getSignedCookie } from "hono/cookie";
 import { testClient } from "hono/testing";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -17,14 +18,19 @@ vi.mock("@/dal/collection", () => ({
   createItem: vi.fn(),
 }));
 
+vi.mock("hono/cookie", () => ({
+  getSignedCookie: vi.fn(),
+}));
+
 describe("collection router", () => {
   const app = createOpenAPIApp();
   const userId = crypto.randomUUID();
 
   app.use(async (c, next) => {
-    c.set("user", { id: userId });
+    c.set("jwtPayload", { id: userId });
     await next();
   });
+
   const client = testClient(app.route("/", router));
 
   beforeEach(() => {
@@ -52,6 +58,8 @@ describe("collection router", () => {
   describe("get user collection", () => {
     it("should return the user record collection", async () => {
       (getUserRecords as Mock).mockResolvedValue([mockItem]);
+      (getSignedCookie as Mock).mockResolvedValue("jwt-token")
+      ();
 
       const response = await client.collection.$get();
       const result = await response.json();

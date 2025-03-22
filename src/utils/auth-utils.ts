@@ -1,7 +1,10 @@
 import * as bcrypt from "bcrypt";
-import { sign } from "hono/jwt";
+import { decode, sign } from "hono/jwt";
+
+import type { JwtPayload } from "@/helpers/rest-helpers/types";
 
 import env from "@/env";
+import { jwtPayloadSchema } from "@/helpers/rest-helpers/types";
 
 const SALT_ROUNDS = 14;
 
@@ -21,7 +24,14 @@ export async function signJwtToken(userId: string) {
       user: userId,
       exp: Date.now() + (ONE_HOUR_IN_SECONDS * 1000),
       iat: Date.now(),
+      nbf: Date.now(),
     },
     env.JWT_SECRET,
   );
+}
+
+export function decodeToken(token: string): JwtPayload | void {
+  const { payload } = decode(token);
+  const test = jwtPayloadSchema.safeParse(payload);
+  return test.data;
 }

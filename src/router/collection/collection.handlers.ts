@@ -1,14 +1,28 @@
+import { getSignedCookie } from "hono/cookie";
 import { StatusCodes } from "http-status-codes";
 
 import type { InferItemInsert } from "@/db/schema/items.table";
 import type { AppRouteHandler } from "@/types";
 
 import { createItem, getRecordById, getUserRecords } from "@/dal/collection";
+import env from "@/env";
+import { decodeToken } from "@/utils/auth-utils";
 
 import type { GetRoute, ListRoute, PostRoute } from "./collection.routes";
 
 export const listHandler: AppRouteHandler<ListRoute> = async (c) => {
-  const userId = c.var.user.id;
+  const token = await getSignedCookie(c, env.SESSION_SECRET, "jwt");
+
+  if (!token) {
+    return c.redirect("/login", StatusCodes.MOVED_TEMPORARILY);
+  }
+
+  const payload = decodeToken(token);
+  const userId = payload?.user;
+  if (!userId) {
+    return c.redirect("/login", StatusCodes.MOVED_TEMPORARILY);
+  }
+
   const result = await getUserRecords(userId);
   c.var.logger.info(`User "${userId}" records returned.`);
   return c.json(result, StatusCodes.OK);

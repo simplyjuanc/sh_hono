@@ -13,6 +13,7 @@ export const list = createRoute({
   parameters: [],
   responses: {
     [StatusCodes.OK.valueOf()]: jsonContent(z.array(itemSchema), "Returns a collection of records for the authenticated user."),
+    [StatusCodes.MOVED_TEMPORARILY.valueOf()]: { description: "Redirect" },
   },
 });
 
