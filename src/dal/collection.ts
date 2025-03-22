@@ -5,6 +5,7 @@ import type { Item } from "@/models/item";
 
 import drizzleDb from "@/db";
 import { items } from "@/db/schema";
+import { DatabaseError, EntityNotFoundError } from "@/models/errors/dal-errors";
 
 export async function getRecordById(id: string, db = drizzleDb): Promise<Item> {
   const item = await db
@@ -12,6 +13,9 @@ export async function getRecordById(id: string, db = drizzleDb): Promise<Item> {
     .from(items)
     .where(eq(items.id, id))
     .then(([result]) => result);
+  if (!item) {
+    throw new EntityNotFoundError("Item", id);
+  }
 
   return mapToItemDto(item);
 }
@@ -27,14 +31,19 @@ export async function getUserRecords(userId: string, db = drizzleDb): Promise<It
 }
 
 export async function createItem(newItem: InferItemInsert, db = drizzleDb): Promise<Item> {
-  return await db
+  const createdItem = await db
     .insert(items)
     .values({
       ...newItem,
       price: newItem.price.toString(),
     })
     .returning()
-    .then(([result]) => mapToItemDto(result));
+    .then(([result]) => result);
+
+  if (!createdItem) {
+    throw new DatabaseError(`Could not create item '${newItem.title}'`);
+  }
+  return mapToItemDto(createdItem);
 }
 
 function mapToItemDto(item: InferItemSelect): Item {

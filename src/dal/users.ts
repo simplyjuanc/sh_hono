@@ -5,16 +5,22 @@ import type { User, UserCreationRequest, UserCredentials } from "@/models/user";
 
 import drizzleDb from "@/db";
 import { users } from "@/db/schema";
-import { EntityNotFoundError } from "@/models/errors/dal-errors";
+import { DatabaseError, EntityNotFoundError } from "@/models/errors/dal-errors";
 
 export async function createUser(credentials: UserCreationRequest, db = drizzleDb): Promise<User> {
   const { email, password, firstName, lastName } = credentials;
-  return await db.insert(users).values({
+  const createdUser = await db.insert(users).values({
     email,
     password,
     firstName: firstName ?? "",
     lastName: lastName ?? "",
-  }).returning().then(([result]) => mapToUserDto(result));
+  }).returning().then(([result]) => result);
+
+  if (!createdUser) {
+    throw new DatabaseError(`Could not create user '${credentials.email}'`);
+  }
+
+  return mapToUserDto(createdUser);
 }
 
 export async function getUserCredentialsFromEmail(email: string, db = drizzleDb): Promise<UserCredentials> {

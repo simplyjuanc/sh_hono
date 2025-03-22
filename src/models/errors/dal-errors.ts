@@ -1,6 +1,6 @@
 import { ServerSideError } from "./base-errors";
 
-abstract class DatabaseError extends ServerSideError {
+export class DatabaseError extends ServerSideError {
   constructor(message: string) {
     super(message);
     this.name = "DatabaseError";
