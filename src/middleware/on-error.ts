@@ -1,4 +1,5 @@
 import type { ErrorHandler } from "hono";
+import type { HTTPResponseError } from "hono/types";
 import type { StatusCode } from "hono/utils/http-status";
 
 import { StatusCodes } from "http-status-codes";
@@ -16,16 +17,26 @@ const errorHandler: ErrorHandler = (err, c) => {
 
   return c.json(
     {
-      message: err.message,
-      stack: env.NODE_ENV === "production"
-        ? undefined
-        : err.stack,
-      cause: env.NODE_ENV === "production"
-        ? undefined
-        : err.cause,
       statusCode,
+      message: err.message,
+      stack: getErrorStack(err),
+      cause: getErrorCause(err),
     },
   );
 };
+
+function getErrorStack(error: Error | HTTPResponseError) {
+  return env.NODE_ENV === "production"
+    ? undefined
+    : error.stack;
+}
+
+function getErrorCause(error: Error | HTTPResponseError) {
+  return env.NODE_ENV === "production"
+    ? undefined
+    : "cause" in error
+      ? error.cause as string
+      : undefined;
+}
 
 export default errorHandler;
