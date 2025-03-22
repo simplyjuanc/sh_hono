@@ -1,29 +1,22 @@
-FROM node:20-alpine AS base
-
-FROM base AS builder
-
-RUN apk add --no-cache gcompat
-RUN apk update
+FROM node:20-slim AS base
+RUN apt-get update
+RUN npm install -g pnpm 
 
 WORKDIR /app
-COPY . . 
-
-COPY package.json pnpm-lock.yaml ./
-RUN npm install -g pnpm 
+COPY package.json  ./
+COPY pnpm-lock.yaml  ./
 RUN pnpm install 
 
-RUN  pnpm run build
 
-
-FROM base AS runner
-
-WORKDIR /app
-
-COPY --from=builder /app/node_modules /app/node_modules
-COPY --from=builder /app/dist /app/dist
-COPY --from=builder /app/package.json /app/package.json
-
-ENV LOG_LEVEL=info
+FROM base AS dev
+COPY . . 
 EXPOSE 3000
 
-CMD ["node", "dist/index.js"]
+
+FROM dev AS builder
+RUN pnpm run build
+
+
+FROM base AS prod
+COPY --from=builder /app/dist /app
+EXPOSE 3000
