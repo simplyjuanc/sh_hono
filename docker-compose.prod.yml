@@ -7,19 +7,16 @@ services:
     ports:
       - ${DB_PORT}:5432
     env_file:
-      - .env.dev
+      - .env
   app:
     build:
       context: .
-      target: dev
+      target: prod
       dockerfile: Dockerfile
-    command: pnpm dev
+    command: node index.js
     ports:
       - ${PORT}:3000
-    volumes:
-      - .:/app
-      - /app/node_modules
     env_file:
-      - .env.dev
+      - .env
     depends_on:
       - db

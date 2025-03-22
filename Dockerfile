@@ -1,25 +1,22 @@
-FROM node:20-slim
-
+FROM node:20-slim AS base
 RUN apt-get update
 RUN npm install -g pnpm 
 
-RUN npm install -g pnpm 
-
 WORKDIR /app
-
 COPY package.json  ./
 COPY pnpm-lock.yaml  ./
-
 RUN pnpm install 
 
+
+FROM base AS dev
 COPY . . 
-
-RUN pnpm run build
-
-# COPY --from=builder /app/node_modules /app/node_modules
-# COPY --from=builder /app/dist /app/dist
-# COPY --from=builder /app/package.json /app/package.json
-
 EXPOSE 3000
 
-CMD ["node", "dist/index.js"]
+
+FROM dev AS builder
+RUN pnpm run build
+
+
+FROM base AS prod
+COPY --from=builder /app/dist /app
+EXPOSE 3000
