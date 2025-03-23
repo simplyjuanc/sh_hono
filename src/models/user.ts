@@ -28,4 +28,10 @@ export const userCredentialsSchema = z.object({
   email: z.string().email(),
   password: z.string(),
 });
+
+export const userCredentialsAndIdSchema = z.object({
+  id: z.string().uuid(),
+}).merge(userCredentialsSchema);
+
 export type UserCredentials = z.infer<typeof userCredentialsSchema>;
+export type UserCredentialsAndId = z.infer<typeof userCredentialsAndIdSchema>;

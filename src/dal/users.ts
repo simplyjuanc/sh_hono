@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 
 import type { InferUserSelect } from "@/db/schema/users.table";
-import type { User, UserCreationRequest, UserCredentials } from "@/models/user";
+import type { User, UserCreationRequest, UserCredentials, UserCredentialsAndId } from "@/models/user";
 
 import drizzleDb from "@/db";
 import { users } from "@/db/schema";
@@ -23,9 +23,10 @@ export async function createUser(credentials: UserCreationRequest, db = drizzleD
   return mapToUserDto(createdUser);
 }
 
-export async function getUserCredentialsFromEmail(email: string, db = drizzleDb): Promise<UserCredentials> {
+export async function getUserCredentialsFromEmail(email: string, db = drizzleDb): Promise<UserCredentialsAndId> {
   const userCredentials = await db
     .select({
+      id: users.id,
       email: users.email,
       password: users.password,
     })

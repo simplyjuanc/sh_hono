@@ -10,7 +10,7 @@ import { errorHandler } from "@/middleware";
 import { EntityNotFoundError } from "@/models/errors/dal-errors";
 import { hashUserPassword, ONE_HOUR_IN_SECONDS, signJwtToken, verifyUserPassword } from "@/utils/auth-utils";
 
-import type { UserLoginRoute, UserSignupRoute } from "./users.routes";
+import type { UserLoginRoute, UserLogoutRoute, UserSignupRoute } from "./users.routes";
 
 export const userSignupHandler: AppRouteHandler<UserSignupRoute> = async (c) => {
   const userCredentials = await c.req.json<UserCreationRequest>();
@@ -33,17 +33,17 @@ export const userLoginHandler: AppRouteHandler<UserLoginRoute> = async (c) => {
   }
 
   try {
-    const userCredentials = await getUserCredentialsFromEmail(email);
-    if (!userCredentials) {
+    const user = await getUserCredentialsFromEmail(email);
+    if (!user) {
       return c.json({ message: ReasonPhrases.BAD_REQUEST }, StatusCodes.BAD_REQUEST);
     }
 
-    const isVerified = await verifyUserPassword(password, userCredentials.password);
+    const isVerified = await verifyUserPassword(password, user.password);
     if (!isVerified) {
       return c.json({ message: ReasonPhrases.BAD_REQUEST }, StatusCodes.BAD_REQUEST);
     }
 
-    const jwt = await signJwtToken(userCredentials.email);
+    const jwt = await signJwtToken(user.id);
 
     await setSignedCookie(c, "jwt", jwt, env.SESSION_SECRET, {
       httpOnly: true,

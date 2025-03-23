@@ -51,24 +51,13 @@ describe("users dal", () => {
     });
   });
 
-  describe("get user credentials", () => {
-    it ("should call the drizzle with the appropriate parameters", async () => {
-      mockQuerySuccessFromDb(db, userCredentials);
-      vi.spyOn(db.select().from(users), "where");
-
-      await getUserCredentialsFromEmail(userCredentials.email);
-
-      expect(db.select().from(users).where).toHaveBeenCalledExactlyOnceWith(eq(users.email, userCredentials.email));
-    });
-
-    it("should return the full credentials", async () => {
-      mockQuerySuccessFromDb(db, userCredentials);
+  describe("get user id from email", () => {
+    it("should return the user id", async () => {
+      mockQuerySuccessFromDb(db, mockUser.id);
 
       const response = await getUserCredentialsFromEmail(userCredentials.email);
 
-      expectTypeOf(response).toMatchObjectType<UserCredentials>();
-      expect(response.email).toBe(userCredentials.email);
-      expect(response.password).toBe(userCredentials.password);
+      expect(response).toBe(mockUser.id);
     });
 
     it("should throw if the user is not found", async () => {
