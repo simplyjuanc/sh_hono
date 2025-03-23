@@ -18,7 +18,7 @@
     "skipLibCheck": true
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "data", "**/*.test.ts"],
+  "exclude": ["node_modules", "dist", "data"],
   "tsc-alias": {
     "verbose": false,
     "resolveFullPaths": true,

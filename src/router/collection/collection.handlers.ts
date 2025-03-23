@@ -12,7 +12,6 @@ import type { GetRoute, ListRoute, PostRoute } from "./collection.routes";
 
 export const listHandler: AppRouteHandler<ListRoute> = async (c) => {
   const token = await getSignedCookie(c, env.SESSION_SECRET, "jwt");
-
   if (!token) {
     return c.redirect("/login", StatusCodes.MOVED_TEMPORARILY);
   }

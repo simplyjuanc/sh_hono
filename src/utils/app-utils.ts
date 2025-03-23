@@ -36,7 +36,7 @@ export function createRouter() {
 }
 
 export const API_VERSION = "v1";
-export function registerApiRoutes(app: OpenApiApp, routes: OpenApiApp[]) {
+export function registerPublicApiRoutes(app: OpenApiApp, routes: OpenApiApp[]) {
   routes.forEach((route) => {
     app.route(`/${API_VERSION}`, route);
   });

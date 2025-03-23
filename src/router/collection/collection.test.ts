@@ -1,7 +1,9 @@
 import type { Mock } from "vitest";
 
+import { fromPartial } from "@total-typescript/shoehorn";
 import { getSignedCookie } from "hono/cookie";
 import { testClient } from "hono/testing";
+import { StatusCodes } from "http-status-codes";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { Item } from "@/models/item";
@@ -9,6 +11,7 @@ import type { Item } from "@/models/item";
 import { mockItem } from "@/__mocks__/mock-record";
 import { createItem, getRecordById, getUserRecords } from "@/dal/collection";
 import { createOpenAPIApp } from "@/utils/app-utils";
+import { decodeToken } from "@/utils/auth-utils";
 
 import router from "./collection.index";
 
@@ -20,6 +23,10 @@ vi.mock("@/dal/collection", () => ({
 
 vi.mock("hono/cookie", () => ({
   getSignedCookie: vi.fn(),
+}));
+
+vi.mock("@/utils/auth-utils", () => ({
+  decodeToken: vi.fn(),
 }));
 
 describe("collection router", () => {
@@ -57,29 +64,29 @@ describe("collection router", () => {
 
   describe("get user collection", () => {
     it("should return the user record collection", async () => {
+      (getSignedCookie as Mock).mockResolvedValue("jwt-token");
+      (decodeToken as Mock).mockReturnValue({ user: userId });
       (getUserRecords as Mock).mockResolvedValue([mockItem]);
-      (getSignedCookie as Mock).mockResolvedValue("jwt-token")
-      ();
 
       const response = await client.collection.$get();
       const result = await response.json();
 
-      expect(getUserRecords).toHaveBeenCalledTimes(1);
-      expect(getUserRecords).toHaveBeenCalledWith(userId);
+      expect(decodeToken).toHaveBeenCalledExactlyOnceWith("jwt-token");
+      expect(getUserRecords).toHaveBeenCalledExactlyOnceWith(userId);
       expect(result).toEqual([mockItem]);
     });
 
-    it("should call the dal with the user id", async () => {
-      (getUserRecords as Mock).mockResolvedValue([mockItem]);
+    it("should redirect the user if not logged in", async () => {
+      (getSignedCookie as Mock).mockResolvedValue("jwt-token");
+      (decodeToken as Mock).mockReturnValue(undefined); ;
 
       const response = await client.collection.$get();
-      const result = await response.json();
 
-      expect(getUserRecords).toHaveBeenCalledTimes(1);
-      expect(getUserRecords).toHaveBeenCalledWith(userId);
-      expect(result).toEqual([mockItem]);
+      expect(response.ok).toBeFalsy();
+      expect(response.status).toBe(StatusCodes.MOVED_TEMPORARILY);
     });
   });
+
   describe("post a new record", () => {
     const ownerId = crypto.randomUUID();
 

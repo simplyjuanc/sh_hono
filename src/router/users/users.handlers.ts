@@ -6,6 +6,7 @@ import type { AppRouteHandler } from "@/types";
 
 import { createUser, getUserCredentialsFromEmail } from "@/dal/users";
 import env from "@/env";
+import { errorHandler } from "@/middleware";
 import { EntityNotFoundError } from "@/models/errors/dal-errors";
 import { hashUserPassword, ONE_HOUR_IN_SECONDS, signJwtToken, verifyUserPassword } from "@/utils/auth-utils";
 
@@ -54,8 +55,11 @@ export const userLoginHandler: AppRouteHandler<UserLoginRoute> = async (c) => {
   }
   catch (e) {
     if (e instanceof EntityNotFoundError) {
-      return c.json({ message: ReasonPhrases.BAD_REQUEST }, StatusCodes.BAD_REQUEST);
+      return c.json({ message: ReasonPhrases.BAD_REQUEST, cause: e }, StatusCodes.BAD_REQUEST);
     }
-    return c.json({ message: ReasonPhrases.INTERNAL_SERVER_ERROR }, StatusCodes.INTERNAL_SERVER_ERROR);
+    if (e instanceof Error) {
+      return errorHandler(e, c);
+    }
+    return c.json({ message: ReasonPhrases.INTERNAL_SERVER_ERROR, cause: e }, StatusCodes.INTERNAL_SERVER_ERROR);
   }
 };
