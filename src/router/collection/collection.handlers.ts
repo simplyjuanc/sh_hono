@@ -17,7 +17,7 @@ export const listHandler: AppRouteHandler<ListRoute> = async (c) => {
   }
 
   const payload = decodeToken(token);
-  const userId = payload?.user;
+  const userId = payload?.sub;
   if (!userId) {
     return c.redirect("/login", StatusCodes.MOVED_TEMPORARILY);
   }

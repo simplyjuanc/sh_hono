@@ -7,6 +7,8 @@ import drizzleDb from "@/db";
 import { items } from "@/db/schema";
 import { DatabaseError, EntityNotFoundError } from "@/models/errors/dal-errors";
 
+const DEFAULT_CONDITION = "UNKNOWN" as const;
+
 export async function getRecordById(id: string, db = drizzleDb): Promise<Item> {
   const item = await db
     .select()
@@ -21,7 +23,6 @@ export async function getRecordById(id: string, db = drizzleDb): Promise<Item> {
 }
 
 export async function getUserRecords(userId: string, db = drizzleDb): Promise<Item[]> {
-  console.warn("getUserRecords", userId);
   const collection = await db
     .select()
     .from(items)
@@ -50,6 +51,6 @@ function mapToItemDto(item: InferItemSelect): Item {
   return {
     ...item,
     price: Number(item.price),
-    condition: item.condition ?? "UNKNOWN", // default to "UNKNOWN" if condition is null
+    condition: item.condition ?? DEFAULT_CONDITION,
   };
 }

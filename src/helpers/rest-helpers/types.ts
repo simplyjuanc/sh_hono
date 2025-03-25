@@ -5,7 +5,7 @@ import { z } from "zod";
 export type ZodSchema = z.ZodUnion | z.AnyZodObject | z.ZodArray<z.AnyZodObject>;
 
 export const jwtPayloadSchema = z.object({
-  user: z.string().uuid().optional(),
+  sub: z.string().uuid().optional(),
   exp: z.number(),
   iat: z.number(),
   nbf: z.number(),
