@@ -1,4 +1,4 @@
-import { setSignedCookie } from "hono/cookie";
+import { deleteCookie, setSignedCookie } from "hono/cookie";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
 
 import type { UserCreationRequest, UserCredentials } from "@/models/user";
@@ -8,7 +8,7 @@ import { createUser, getUserCredentialsFromEmail } from "@/dal/users";
 import env from "@/env";
 import { errorHandler } from "@/middleware";
 import { EntityNotFoundError } from "@/models/errors/dal-errors";
-import { hashUserPassword, ONE_HOUR_IN_SECONDS, signJwtToken, verifyUserPassword } from "@/utils/auth-utils";
+import { decodeToken, hashUserPassword, ONE_HOUR_IN_SECONDS, signJwtToken, verifyUserPassword } from "@/utils/auth-utils";
 
 import type { UserLoginRoute, UserLogoutRoute, UserSignupRoute } from "./users.routes";
 
@@ -51,7 +51,7 @@ export const userLoginHandler: AppRouteHandler<UserLoginRoute> = async (c) => {
       sameSite: "strict",
     });
 
-    return c.json(undefined, StatusCodes.OK);
+    return c.json(null, StatusCodes.OK);
   }
   catch (e) {
     if (e instanceof EntityNotFoundError) {
@@ -62,4 +62,16 @@ export const userLoginHandler: AppRouteHandler<UserLoginRoute> = async (c) => {
     }
     return c.json({ message: ReasonPhrases.INTERNAL_SERVER_ERROR, cause: e }, StatusCodes.INTERNAL_SERVER_ERROR);
   }
+};
+
+export const userLogoutHandler: AppRouteHandler<UserLogoutRoute> = async (c) => {
+  const jwt = decodeToken(c.var.jwtPayload);
+  if (!jwt?.sub) {
+    return c.redirect("/login", StatusCodes.MOVED_TEMPORARILY);
+  }
+
+  deleteCookie(c, "jwt", {
+    httpOnly: true,
+  });
+  return c.body(null, StatusCodes.NO_CONTENT);
 };

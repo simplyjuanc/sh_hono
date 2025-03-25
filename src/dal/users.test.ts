@@ -1,7 +1,6 @@
-import { eq } from "drizzle-orm";
 import { beforeEach, describe, expect, expectTypeOf, it, vi } from "vitest";
 
-import type { User, UserCreationRequest, UserCredentials } from "@/models/user";
+import type { User, UserCreationRequest } from "@/models/user";
 
 import db from "@/db";
 import { users } from "@/db/schema";

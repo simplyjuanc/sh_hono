@@ -1,6 +1,7 @@
 import type { Mock } from "vitest";
 
 import { compare, hash } from "bcrypt";
+import { deleteCookie } from "hono/cookie";
 import { testClient } from "hono/testing";
 import { StatusCodes } from "http-status-codes";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -22,6 +23,14 @@ vi.mock("bcrypt", () => ({
   hash: vi.fn(),
   compare: vi.fn(),
 }));
+
+vi.mock("hono/cookie", async () => {
+  const actual = await vi.importActual<typeof import("hono/cookie")>("hono/cookie");
+  return {
+    ...actual,
+    deleteCookie: vi.fn(),
+  };
+});
 
 const app = createOpenAPIApp();
 const client = testClient(app.route("/", router));
@@ -142,6 +151,21 @@ describe("users router", () => {
       expect(compare).toHaveBeenCalledExactlyOnceWith(password, password);
       expect(response.ok).toBeFalsy();
       expect(response.status).toBe(400);
+    });
+  });
+
+  describe("logout", () => {
+    const userId = crypto.randomUUID();
+    app.use(async (c, next) => {
+      c.set("jwtPayload", { sub: userId });
+      await next();
+    });
+
+    it("should unset the jwt from the client", async () => {
+      const response = await client.users["log-out"].$post();
+
+      expect(response.status).toBe(StatusCodes.OK);
+      expect(deleteCookie).toHaveBeenCalledOnce();
     });
   });
 });

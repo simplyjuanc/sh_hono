@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 
 import type { InferUserSelect } from "@/db/schema/users.table";
-import type { User, UserCreationRequest, UserCredentials, UserCredentialsAndId } from "@/models/user";
+import type { User, UserCreationRequest, UserCredentialsAndId } from "@/models/user";
 
 import drizzleDb from "@/db";
 import { users } from "@/db/schema";

@@ -38,5 +38,17 @@ export const userLoginRoute = createRoute({
   },
 });
 
+export const userLogoutRoute = createRoute({
+  tags: USERS_TAGS,
+  description: "User log-out",
+  method: "post",
+  path: "/users/log-out",
+  responses: {
+    [StatusCodes.NO_CONTENT.valueOf()]: { description: "Log-out success." },
+    [StatusCodes.MOVED_TEMPORARILY.valueOf()]: { description: "Redirect to login page." },
+  },
+});
+
 export type UserSignupRoute = typeof userSignUpRoute;
 export type UserLoginRoute = typeof userLoginRoute;
+export type UserLogoutRoute = typeof userLogoutRoute;
