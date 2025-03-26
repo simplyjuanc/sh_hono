@@ -1,29 +1,25 @@
-FROM node:20-alpine AS base
-
-FROM base AS builder
-
-RUN apk add --no-cache gcompat
-RUN apk update
-
-WORKDIR /app
-COPY . . 
-
-COPY package.json pnpm-lock.yaml ./
+FROM node:20-slim AS base
+RUN apt-get update
 RUN npm install -g pnpm 
-RUN pnpm install 
-
-RUN  pnpm run build
-
-
-FROM base AS runner
 
 WORKDIR /app
+COPY package.json  ./
+COPY pnpm-lock.yaml  ./
 
-COPY --from=builder /app/node_modules /app/node_modules
-COPY --from=builder /app/dist /app/dist
-COPY --from=builder /app/package.json /app/package.json
 
-ENV LOG_LEVEL=info
-EXPOSE 3000
+FROM base AS dev
+RUN pnpm install 
+COPY . . 
+ENV NODE_ENV=dev
 
-CMD ["node", "dist/index.js"]
+
+FROM dev AS builder
+RUN pnpm run build
+
+
+FROM base AS prod
+# It's necessary to run pnpm install again 
+# because bcrypt uses image-specific binaries at build time
+RUN pnpm install 
+COPY --from=builder /app/dist /app
+ENV NODE_ENV=production

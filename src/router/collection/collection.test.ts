@@ -1,6 +1,9 @@
 import type { Mock } from "vitest";
 
+import { getSignedCookie } from "hono/cookie";
+import { decode } from "hono/jwt";
 import { testClient } from "hono/testing";
+import { StatusCodes } from "http-status-codes";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { Item } from "@/models/item";
@@ -17,18 +20,29 @@ vi.mock("@/dal/collection", () => ({
   createItem: vi.fn(),
 }));
 
+vi.mock("hono/cookie", () => ({
+  getSignedCookie: vi.fn(),
+}));
+
+vi.mock("hono/jwt", () => ({
+  decode: vi.fn(),
+}));
+
 describe("collection router", () => {
   const app = createOpenAPIApp();
   const userId = crypto.randomUUID();
 
-  app.use(async (c, next) => {
-    c.set("user", { id: userId });
-    await next();
-  });
   const client = testClient(app.route("/", router));
+  app.use(async (c, next) => {
+    c.set("jwtPayload", {
+      sub: userId,
 
-  beforeEach(() => {
-    vi.resetAllMocks();
+    });
+    await next();
+
+    beforeEach(() => {
+      vi.resetAllMocks();
+    });
   });
 
   describe("get record", () => {
@@ -51,27 +65,35 @@ describe("collection router", () => {
 
   describe("get user collection", () => {
     it("should return the user record collection", async () => {
+      (getSignedCookie as Mock).mockResolvedValue("jwt-token");
+      (decode as Mock).mockReturnValue({
+        payload: {
+          sub: userId,
+          exp: Date.now() + 1000,
+          iat: Date.now(),
+          nbf: Date.now(),
+        },
+      });
       (getUserRecords as Mock).mockResolvedValue([mockItem]);
 
       const response = await client.collection.$get();
       const result = await response.json();
 
-      expect(getUserRecords).toHaveBeenCalledTimes(1);
-      expect(getUserRecords).toHaveBeenCalledWith(userId);
+      expect(decode).toHaveBeenCalledExactlyOnceWith("jwt-token");
+      expect(getUserRecords).toHaveBeenCalledExactlyOnceWith(userId);
       expect(result).toEqual([mockItem]);
     });
 
-    it("should call the dal with the user id", async () => {
-      (getUserRecords as Mock).mockResolvedValue([mockItem]);
+    it("should redirect the user if not logged in", async () => {
+      (getSignedCookie as Mock).mockResolvedValue(undefined);
 
       const response = await client.collection.$get();
-      const result = await response.json();
 
-      expect(getUserRecords).toHaveBeenCalledTimes(1);
-      expect(getUserRecords).toHaveBeenCalledWith(userId);
-      expect(result).toEqual([mockItem]);
+      expect(response.ok).toBeFalsy();
+      expect(response.status).toBe(StatusCodes.MOVED_TEMPORARILY);
     });
   });
+
   describe("post a new record", () => {
     const ownerId = crypto.randomUUID();
 
@@ -79,7 +101,6 @@ describe("collection router", () => {
       const creationRequest: Omit<Item, "id"> = {
         title: "Test Record",
         artists: ["Test Artist"],
-        tracks: ["Test Track", "Test Track 2"],
         price: 157,
         format: "VINYL",
         ownerId,
@@ -100,6 +121,7 @@ describe("collection router", () => {
       const result = await response.json();
 
       expect(createItem).toHaveBeenCalledTimes(1);
+      expect(createItem).toHaveBeenCalledWith(creationRequest);
       expect(result).toEqual(expectedResult);
     });
   });

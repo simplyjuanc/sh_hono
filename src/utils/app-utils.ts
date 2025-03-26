@@ -5,7 +5,11 @@ import { StatusCodes } from "http-status-codes";
 
 import type { AppBindings, OpenApiApp } from "@/types";
 
+import { authMiddleware } from "@/middleware/auth-middleware";
 import { errorHandler, logger, notFoundHandler, serveFavicon } from "@/middleware/index";
+
+export const API_VERSION = "v1";
+const basePath = `/api/${API_VERSION}`;
 
 export function createOpenAPIApp() {
   const app = new OpenAPIHono<AppBindings>();
@@ -35,9 +39,13 @@ export function createRouter() {
   });
 }
 
-export const API_VERSION = "v1";
 export function registerApiRoutes(app: OpenApiApp, routes: OpenApiApp[]) {
   routes.forEach((route) => {
-    app.route(`/${API_VERSION}`, route);
+    app.route(basePath, route);
   });
+}
+
+export function registerProtectedApiRoutes(app: OpenApiApp, routes: OpenApiApp[]) {
+  app.use(`${basePath}/*`, authMiddleware);
+  registerApiRoutes(app, routes);
 }

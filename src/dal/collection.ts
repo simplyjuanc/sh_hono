@@ -1,53 +1,61 @@
 import { eq } from "drizzle-orm";
 
-import type { InferItemSelect } from "@/db/schema/items.table";
+import type { InferItemInsert, InferItemSelect } from "@/db/schema/items.table";
 import type { Item } from "@/models/item";
 
 import drizzleDb from "@/db";
 import { items } from "@/db/schema";
+import { DatabaseError, EntityNotFoundError } from "@/models/errors/dal-errors";
+
+const DEFAULT_CONDITION = "UNKNOWN" as const;
 
 export async function getRecordById(id: string, db = drizzleDb): Promise<Item> {
   const item = await db
     .select()
     .from(items)
-    .where(eq(items.id, id));
+    .where(eq(items.id, id))
+    .then(([result]) => result);
 
-  if (item.length === 0) {
-    throw new Error("Record not found");
+  if (!item) {
+    throw new EntityNotFoundError("Item", id);
   }
-
-  return mapToItemDto(item[0]);
+  return mapToItemDto(item);
 }
 
 export async function getUserRecords(userId: string, db = drizzleDb): Promise<Item[]> {
-  console.warn("getUserRecords", userId);
-  const collection = await db
-    .select()
-    .from(items)
-    .where(eq(items.ownerId, userId));
+  try {
+    const userCollection = await db
+      .select()
+      .from(items)
+      .where(eq(items.ownerId, userId));
 
-  return collection.map(mapToItemDto);
+    return userCollection.map(mapToItemDto);
+  }
+  catch (error) {
+    throw new DatabaseError(`Failed to fetch records for user ${userId}`);
+  }
 }
 
-export async function createItem(newItem: Item, db = drizzleDb): Promise<Item> {
-  const insertedItem = await db
+export async function createItem(newItem: InferItemInsert, db = drizzleDb): Promise<Item> {
+  const createdItem = await db
     .insert(items)
     .values({
       ...newItem,
       price: newItem.price.toString(),
     })
-    .returning();
+    .returning()
+    .then(([result]) => result);
 
-  return mapToItemDto(insertedItem[0]);
+  if (!createdItem) {
+    throw new DatabaseError(`Could not create item '${newItem.title}'`);
+  }
+  return mapToItemDto(createdItem);
 }
 
 function mapToItemDto(item: InferItemSelect): Item {
-  // TODO finish mapping once the schema is complete
-  const result: Item = {
+  return {
     ...item,
-    tracks: [],
     price: Number(item.price),
-    condition: item.condition ?? undefined,
+    condition: item.condition ?? DEFAULT_CONDITION,
   };
-  return result;
 }

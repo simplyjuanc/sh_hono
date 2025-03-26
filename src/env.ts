@@ -29,6 +29,9 @@ const EnvSchema = z.object({
     ],
   ).default("info"),
 
+  SESSION_SECRET: z.string(),
+  JWT_SECRET: z.string(),
+
   DB_HOST: z.string(),
   DB_USER: z.string(),
   DB_PASSWORD: z.string(),
