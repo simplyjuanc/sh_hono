@@ -1,4 +1,4 @@
-import { createOpenAPIApp, registerPublicApiRoutes } from "@/utils/app-utils";
+import { createOpenAPIApp, registerApiRoutes, registerProtectedApiRoutes } from "@/utils/app-utils";
 
 import collectionRouter from "./router/collection/collection.index";
 import healthRouter from "./router/health.routes";
@@ -10,10 +10,14 @@ configureOpenAPI(app);
 
 const publicRoutes = [
   healthRouter,
-  collectionRouter,
   usersRouter,
 ];
 
-registerPublicApiRoutes(app, publicRoutes);
+const privateRoutes = [
+  collectionRouter,
+];
+
+registerApiRoutes(app, publicRoutes);
+registerProtectedApiRoutes(app, privateRoutes);
 
 export default app;
