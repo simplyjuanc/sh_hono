@@ -5,6 +5,7 @@ import type { JwtPayload } from "@/helpers/rest-helpers/types";
 
 import env from "@/env";
 import { jwtPayloadSchema } from "@/helpers/rest-helpers/types";
+
 import { getCurrentUnixTimeInSeconds } from "./time-utils";
 
 const SALT_ROUNDS = 14;
@@ -22,7 +23,7 @@ export async function verifyUserPassword(inputPassword: string, storedHash: stri
 export async function signJwtToken(userId: string) {
   return await sign(
     {
-      user: userId,
+      sub: userId,
       exp: getCurrentUnixTimeInSeconds() + (ONE_HOUR_IN_SECONDS * 1000),
       iat: getCurrentUnixTimeInSeconds(),
     },

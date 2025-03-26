@@ -15,20 +15,25 @@ export async function getRecordById(id: string, db = drizzleDb): Promise<Item> {
     .from(items)
     .where(eq(items.id, id))
     .then(([result]) => result);
+
   if (!item) {
     throw new EntityNotFoundError("Item", id);
   }
-
   return mapToItemDto(item);
 }
 
 export async function getUserRecords(userId: string, db = drizzleDb): Promise<Item[]> {
-  const collection = await db
-    .select()
-    .from(items)
-    .where(eq(items.ownerId, userId));
+  try {
+    const userCollection = await db
+      .select()
+      .from(items)
+      .where(eq(items.ownerId, userId));
 
-  return collection.map(mapToItemDto);
+    return userCollection.map(mapToItemDto);
+  }
+  catch (error) {
+    throw new DatabaseError(`Failed to fetch records for user ${userId}`);
+  }
 }
 
 export async function createItem(newItem: InferItemInsert, db = drizzleDb): Promise<Item> {
