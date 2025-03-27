@@ -6,7 +6,7 @@ services:
       dockerfile: Dockerfile
     command: ./start.sh
     ports:
-      - ${PORT}:${PORT}
+      - 3000:3000
     volumes:
       - ./src:/app/src
       - /app/node_modules
@@ -17,9 +17,13 @@ services:
   db:
     image: postgres:17.4
     restart: always
+    ports:
+      - ${DB_PORT}:${DB_PORT}
     volumes:
       - ./data/index:/var/lib/postgresql/data
-    ports:
-      - ${DB_PORT}:5432
     env_file:
       - .env.dev
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}

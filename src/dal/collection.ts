@@ -31,7 +31,7 @@ export async function getUserRecords(userId: string, db = drizzleDb): Promise<It
 
     return userCollection.map(mapToItemDto);
   }
-  catch (error) {
+  catch {
     throw new DatabaseError(`Failed to fetch records for user ${userId}`);
   }
 }
