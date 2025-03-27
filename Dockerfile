@@ -2,6 +2,8 @@ FROM node:20-slim AS base
 RUN apt-get update
 RUN npm install -g pnpm 
 
+EXPOSE 3000
+
 WORKDIR /app
 COPY package.json  ./
 COPY pnpm-lock.yaml  ./
