@@ -8,7 +8,7 @@ import { createUser, getUserCredentialsFromEmail } from "@/dal/users";
 import env from "@/env";
 import { errorHandler } from "@/middleware";
 import { EntityNotFoundError } from "@/models/errors/dal-errors";
-import { decodeToken, hashUserPassword, ONE_HOUR_IN_SECONDS, signJwtToken, verifyUserPassword } from "@/utils/auth-utils";
+import { hashUserPassword, ONE_HOUR_IN_SECONDS, signJwtToken, verifyUserPassword } from "@/utils/auth-utils";
 
 import type { UserLoginRoute, UserLogoutRoute, UserSignupRoute } from "./users.routes";
 
@@ -65,13 +65,9 @@ export const userLoginHandler: AppRouteHandler<UserLoginRoute> = async (c) => {
 };
 
 export const userLogoutHandler: AppRouteHandler<UserLogoutRoute> = async (c) => {
-  const jwt = decodeToken(c.var.jwtPayload);
-  if (!jwt?.sub) {
-    return c.redirect("/login", StatusCodes.MOVED_TEMPORARILY);
-  }
-
   deleteCookie(c, "jwt", {
     httpOnly: true,
+    sameSite: "strict",
   });
   return c.body(null, StatusCodes.NO_CONTENT);
 };
