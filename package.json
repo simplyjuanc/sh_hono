@@ -4,11 +4,12 @@
   "version": "1.0.0",
   "scripts": {
     "clean": "rimraf dist",
-    "build": "pnpm clean && tsc && tsc-alias",
+    "build": "pnpm clean && tsc && tsc-alias && pnpm sentry:sourcemaps",
     "start": "pnpm build && node dist/index.js",
     "dev": "tsx watch src/index.ts",
     "lint": "eslint --fix .",
-    "test": "LOG_LEVEL=silent vitest"
+    "test": "LOG_LEVEL=silent vitest",
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org juan-vasquez --project sh-app dist && sentry-cli sourcemaps upload --org juan-vasquez --project sh-app dist"
   },
   "dependencies": {
     "@asteasolutions/zod-to-openapi": "^7.3.0",
@@ -16,6 +17,8 @@
     "@hono/sentry": "^1.2.0",
     "@hono/zod-openapi": "^0.18.4",
     "@scalar/hono-api-reference": "^0.5.177",
+    "@sentry/cli": "^2.43.0",
+    "@sentry/node": "^9.10.1",
     "@total-typescript/shoehorn": "^0.1.2",
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.7",

@@ -1,5 +1,6 @@
 import type { MiddlewareHandler } from "hono";
 
+import { getSentry } from "@hono/sentry";
 import { getSignedCookie } from "hono/cookie";
 import { verify } from "hono/jwt";
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
@@ -19,6 +20,7 @@ export const authMiddleware: MiddlewareHandler<AppBindings> = async (c, next) =>
     await next();
   }
   catch (error) {
+    getSentry(c).captureException(error);
     c.var.logger.error(error);
     return c.json({ message: ReasonPhrases.UNAUTHORIZED }, StatusCodes.UNAUTHORIZED);
   }

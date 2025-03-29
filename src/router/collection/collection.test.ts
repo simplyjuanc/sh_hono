@@ -1,19 +1,12 @@
 import type { Mock } from "vitest";
 
-import { OpenAPIHono } from "@hono/zod-openapi";
-import { getSignedCookie } from "hono/cookie";
-import { decode, verify } from "hono/jwt";
 import { testClient } from "hono/testing";
-import { StatusCodes } from "http-status-codes";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { Item } from "@/models/item";
-import type { OpenApiApp } from "@/types";
 
 import { mockItem } from "@/__mocks__/mock-record";
-import app from "@/app";
 import { createItem, getRecordById, getUserRecords } from "@/dal/collection";
-import { AppBindings } from "@/types";
 import { createOpenAPIApp } from "@/utils/app-utils";
 
 import router from "./collection.index";
