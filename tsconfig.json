@@ -7,12 +7,21 @@
     "rootDir": "./src",
     "module": "ESNext",
     "moduleResolution": "node",
+
     "paths": {
       "@/*": ["src/*"]
     },
+
     "types": ["node"],
     "strict": true,
+    "inlineSources": true,
     "outDir": "./dist",
+    "sourceMap": true,
+
+    // Set `sourceRoot` to  "/" to strip the build path prefix
+    // from generated source code references.
+    // This improves issue grouping in Sentry.
+    "sourceRoot": "/",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true
