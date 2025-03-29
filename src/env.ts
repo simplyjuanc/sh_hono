@@ -32,6 +32,8 @@ const EnvSchema = z.object({
   SESSION_SECRET: z.string(),
   JWT_SECRET: z.string(),
 
+  SENTRY_DSN: z.string(),
+
   DB_HOST: z.string(),
   DB_USER: z.string(),
   DB_PASSWORD: z.string(),

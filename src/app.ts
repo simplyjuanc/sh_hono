@@ -6,6 +6,7 @@ import usersRouter from "./router/users/users.index";
 import { configureOpenAPI } from "./utils/open-api-utils";
 
 const app = createOpenAPIApp();
+
 configureOpenAPI(app);
 
 const publicRoutes = [
