@@ -1,6 +1,7 @@
-import { sentry } from "@hono/sentry";
+/* eslint-disable perfectionist/sort-imports */
+// eslint-disable-next-line unused-imports/no-unused-imports
+import sentry from "./sentry";
 
-// eslint-disable-next-line perfectionist/sort-imports
 import type { Hook } from "@hono/zod-openapi";
 
 import { OpenAPIHono } from "@hono/zod-openapi";
@@ -8,7 +9,6 @@ import { StatusCodes } from "http-status-codes";
 
 import type { AppBindings, OpenApiApp } from "@/types";
 
-import env from "@/env";
 import { authMiddleware } from "@/middleware/auth-middleware";
 import { errorHandler, logger, notFoundHandler, serveFavicon } from "@/middleware/index";
 
@@ -17,10 +17,6 @@ const basePath = `/api/${API_VERSION}`;
 
 export function createOpenAPIApp() {
   const app = new OpenAPIHono<AppBindings>();
-  app.use(sentry({
-    dsn: env.SENTRY_DSN,
-    environment: env.NODE_ENV,
-  }));
   app.use(serveFavicon("🚀"));
   app.use(logger());
   app.notFound(notFoundHandler);
