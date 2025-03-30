@@ -1,6 +1,8 @@
+import { sentry } from "@hono/sentry";
+
+// eslint-disable-next-line perfectionist/sort-imports
 import type { Hook } from "@hono/zod-openapi";
 
-import { sentry } from "@hono/sentry";
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { StatusCodes } from "http-status-codes";
 
