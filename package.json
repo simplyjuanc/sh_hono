@@ -9,7 +9,7 @@
     "dev": "tsx watch src/index.ts",
     "lint": "eslint --fix .",
     "test": "LOG_LEVEL=silent vitest",
-    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org juan-vasquez --project sh-app dist && sentry-cli sourcemaps upload --org juan-vasquez --project sh-app dist"
+    "sentry:sourcemaps": "sentry-cli --auth-token $SENTRY_AUTH_TOKEN sourcemaps inject --org juan-vasquez-1r --project sh-hono ./dist && sentry-cli sourcemaps upload --org juan-vasquez-1r --project sh-hono ./dist"
   },
   "dependencies": {
     "@asteasolutions/zod-to-openapi": "^7.3.0",
