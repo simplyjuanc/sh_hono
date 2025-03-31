@@ -8,6 +8,8 @@ export default defineConfig({
   schema: "./src/db/schema",
   dbCredentials: {
     url: env.DB_URL,
+    port: env.DB_PORT,
+    ssl: true,
   },
   verbose: true,
   strict: true,
