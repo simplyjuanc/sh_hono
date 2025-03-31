@@ -1,6 +1,6 @@
 import type { Context } from "hono";
 
-import { captureException } from "@sentry/node";
+import { getSentry } from "@hono/sentry";
 
 import type { AppBindings } from "@/types";
 
@@ -10,5 +10,5 @@ export function logError(c: Context, error: unknown) {
 
 export function logAndReportError(c: Context<AppBindings>, error: unknown) {
   c.var.logger.error(error);
-  captureException(error);
+  getSentry(c).captureException(error);
 }

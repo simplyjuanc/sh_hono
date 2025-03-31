@@ -30,8 +30,6 @@ COPY . .
 
 FROM dev AS builder
 ENV NODE_ENV="production"
-ARG SENTRY_AUTH_TOKEN
-ENV SENTRY_AUTH_TOKEN=$SENTRY_AUTH_TOKEN
 RUN pnpm build
 
 
