@@ -36,3 +36,4 @@ RUN pnpm build
 FROM base AS prod
 RUN pnpm install --prod=true
 COPY --from=builder /app/dist /app
+CMD [ "node", "index.js" ]
