@@ -4,7 +4,7 @@ services:
       context: .
       target: dev
       dockerfile: Dockerfile
-    command: ./start.sh
+    command: pnpm dev
     ports:
       - 3000:3000
     volumes:

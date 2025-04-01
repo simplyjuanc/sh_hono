@@ -1,20 +1,20 @@
 # syntax = docker/dockerfile:1
 
 ARG NODE_VERSION=20.18.0
-FROM node:${NODE_VERSION}-slim AS base
+FROM node:${NODE_VERSION}-alpine AS base
 LABEL fly_launch_runtime="Node.js"
 
 WORKDIR /app
-
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y \
-    build-essential \
-    node-gyp \
-    pkg-config \
-    python-is-python3 \
+RUN apk update && \
+    apk upgrade --no-cache && \
+    apk add --no-cache \
+    build-base \
+    python3 \
+    make \
+    g++ \
     jq \
-    ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
+    ca-certificates && \
+    rm -rf /var/cache/apk/*
 
 ARG PNPM_VERSION=9.12.2
 RUN npm install -g pnpm@$PNPM_VERSION
@@ -35,5 +35,5 @@ RUN pnpm build
 
 FROM base AS prod
 RUN pnpm install --prod=true
-COPY --from=builder /app/dist /app
-CMD [ "node", "index.js" ]
+COPY --from=builder /app/dist /app/dist
+CMD [ "node", "dist/index.js" ]
