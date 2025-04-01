@@ -52,6 +52,16 @@ export async function createItem(newItem: InferItemInsert, db = drizzleDb): Prom
   return mapToItemDto(createdItem);
 }
 
+export async function deleteItem(id: string, db = drizzleDb): Promise<Item> {
+  const deletedItem = await db
+    .delete(items)
+    .where(eq(items.id, id))
+    .returning()
+    .then(([result]) => result);
+
+  return mapToItemDto(deletedItem);
+}
+
 function mapToItemDto(item: InferItemSelect): Item {
   return {
     ...item,
