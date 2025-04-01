@@ -24,21 +24,29 @@ export async function createUser(credentials: UserCreationRequest, db = drizzleD
 }
 
 export async function getUserCredentialsFromEmail(email: string, db = drizzleDb): Promise<UserCredentialsAndId> {
-  const userCredentials = await db
-    .select({
-      id: users.id,
-      email: users.email,
-      password: users.password,
-    })
-    .from(users)
-    .where(eq(users.email, email))
-    .then(([result]) => result);
+  try {
+    const userCredentials = await db
+      .select({
+        id: users.id,
+        email: users.email,
+        password: users.password,
+      })
+      .from(users)
+      .where(eq(users.email, email))
+      .then(([result]) => result);
 
-  if (!userCredentials) {
-    throw new EntityNotFoundError("User credentials", email);
+    if (!userCredentials) {
+      throw new EntityNotFoundError("User credentials", email);
+    }
+
+    return userCredentials;
   }
-
-  return userCredentials;
+  catch (error) {
+    if (error instanceof DatabaseError) {
+      throw error;
+    }
+    throw new DatabaseError(`Could not get user credentials for email '${email}'`);
+  }
 }
 
 function mapToUserDto(item: InferUserSelect): User {

@@ -9,6 +9,7 @@ import env from "@/env";
 import { errorHandler } from "@/middleware";
 import { EntityNotFoundError } from "@/models/errors/dal-errors";
 import { hashUserPassword, ONE_HOUR_IN_SECONDS, signJwtToken, verifyUserPassword } from "@/utils/auth-utils";
+import { logAndReportError } from "@/utils/log-utils";
 
 import type { UserLoginRoute, UserLogoutRoute, UserSignupRoute } from "./users.routes";
 
@@ -54,13 +55,14 @@ export const userLoginHandler: AppRouteHandler<UserLoginRoute> = async (c) => {
     return c.json(null, StatusCodes.OK);
   }
   catch (e) {
+    logAndReportError(c, e);
     if (e instanceof EntityNotFoundError) {
       return c.json({ message: ReasonPhrases.BAD_REQUEST, cause: e }, StatusCodes.BAD_REQUEST);
     }
     if (e instanceof Error) {
-      return errorHandler(e, c);
+      return errorHandler({ ...e, message: ReasonPhrases.INTERNAL_SERVER_ERROR }, c);
     }
-    return c.json({ message: ReasonPhrases.INTERNAL_SERVER_ERROR, cause: e }, StatusCodes.INTERNAL_SERVER_ERROR);
+    return c.json({ ...e as object, message: ReasonPhrases.INTERNAL_SERVER_ERROR }, StatusCodes.INTERNAL_SERVER_ERROR);
   }
 };
 

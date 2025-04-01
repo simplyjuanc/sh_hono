@@ -6,15 +6,23 @@ import env from "@/env";
 
 export default function logger() {
   return pinoLogger({
-    pino: pino({
-      level: env.LOG_LEVEL,
-    }, applyPrettier()),
+    pino: pino(getLoggerConfig()),
     http: {
       reqId: () => crypto.randomUUID(),
     },
   });
 };
 
-function applyPrettier() {
-  return env.NODE_ENV === "production" ? undefined : pretty();
+function getLoggerConfig() {
+  return env.NODE_ENV === "production"
+    ? {
+        level: env.LOG_LEVEL,
+        transport: {
+          target: "pino-sentry-transport",
+          options: {
+            dsn: env.SENTRY_DSN,
+          },
+        },
+      }
+    : pretty();
 }
