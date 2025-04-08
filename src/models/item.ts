@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "@hono/zod-openapi";
 
 export const itemConditionSchema = z.union([
   z.literal("MINT"),

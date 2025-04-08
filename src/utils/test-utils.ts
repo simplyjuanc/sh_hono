@@ -27,9 +27,11 @@ export function mockInsertIntoDb(db: Database, mockResult: any) {
 }
 
 export function mockDeleteFromDb(db: Database, mockResult: any) {
-  db.delete = vi.fn().mockReturnValue({
-    where: vi.fn().mockReturnValue({
-      returning: vi.fn().mockResolvedValue([mockResult]),
+  db.update = vi.fn().mockReturnValue({
+    set: vi.fn().mockReturnValue({
+      where: vi.fn().mockReturnValue({
+        returning: vi.fn().mockResolvedValue([mockResult]),
+      }),
     }),
   });
 }

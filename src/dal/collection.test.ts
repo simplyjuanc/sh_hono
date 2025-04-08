@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq, isNotNull } from "drizzle-orm";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { Item } from "@/models/item";
@@ -61,7 +61,7 @@ describe("collection dal", () => {
 
       await getUserRecords(userId);
 
-      expect(db.select().from(items).where).toHaveBeenCalledWith(eq(items.ownerId, userId));
+      expect(db.select().from(items).where).toHaveBeenCalledWith(and(eq(items.ownerId, userId), isNotNull(items.deletedAt)));
     });
 
     it("should return the correct records from the dal", async () => {
@@ -111,12 +111,12 @@ describe("collection dal", () => {
   describe("delete record", () => {
     it("should delete an existing record from the db", async () => {
       mockDeleteFromDb(db, mockItemBase);
-      vi.spyOn(db.delete(items), "where");
+      vi.spyOn(db.update(items), "set");
 
       const result = await deleteItem(itemId);
 
       expect(result).toEqual(mockItemBase);
-      expect(db.delete(items).where).toHaveBeenCalledExactlyOnceWith(eq(items.id, itemId));
+      expect(db.update(items).set({}).where).toHaveBeenCalledExactlyOnceWith(eq(items.id, itemId));
     });
   });
 });
