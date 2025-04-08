@@ -1,18 +1,17 @@
-import { eq } from "drizzle-orm";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { and, eq, isNotNull } from "drizzle-orm";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { Item } from "@/models/item";
 
 import db from "@/db";
 import { items } from "@/db/schema";
 import { EntityNotFoundError } from "@/models/errors/dal-errors";
-import { mockInsertIntoDb, mockQueryFailureFromDb, mockQuerySuccessFromDb } from "@/utils/test-utils";
+import { mockDeleteFromDb, mockInsertIntoDb, mockQueryFailureFromDb, mockQuerySuccessFromDb } from "@/utils/test-utils";
 
-import { createItem, getRecordById, getUserRecords } from "./collection";
+import { createItem, deleteItem, getRecordById, getUserRecords } from "./collection";
 
 describe("collection dal", () => {
   const itemId = crypto.randomUUID();
-
   const mockItemBase: Item = {
     id: itemId,
     ownerId: crypto.randomUUID(),
@@ -28,7 +27,7 @@ describe("collection dal", () => {
   });
 
   describe("getRecordById", () => {
-    it("should call the collection table with the correct if", async () => {
+    it("should call the collection table with the correct id", async () => {
       mockQuerySuccessFromDb(db, mockItemBase);
 
       vi.spyOn(db.select().from(items), "where");
@@ -62,7 +61,7 @@ describe("collection dal", () => {
 
       await getUserRecords(userId);
 
-      expect(db.select().from(items).where).toHaveBeenCalledWith(eq(items.ownerId, userId));
+      expect(db.select().from(items).where).toHaveBeenCalledWith(and(eq(items.ownerId, userId), isNotNull(items.deletedAt)));
     });
 
     it("should return the correct records from the dal", async () => {
@@ -86,24 +85,19 @@ describe("collection dal", () => {
     });
   });
 
-  const mockItemInsertAttributes = {
-    ...mockItemBase,
-    price: mockItemBase.price.toString(),
-  };
-
   describe("createItem", () => {
-    it("should call the collection table with the correct data", async () => {
-      const expectedCallArg = {
-        ...mockItemBase,
-        price: mockItemBase.price.toString(),
-      };
+    const mockItemInsertAttributes = {
+      ...mockItemBase,
+      price: mockItemBase.price.toString(),
+    };
 
+    it("should call the collection table with the correct data", async () => {
       mockInsertIntoDb(db, mockItemBase);
       vi.spyOn(db.insert(items), "values");
 
       await createItem(mockItemInsertAttributes);
 
-      expect(db.insert(items).values).toHaveBeenCalledWith(expectedCallArg);
+      expect(db.insert(items).values).toHaveBeenCalledWith(mockItemInsertAttributes);
     });
 
     it("should return the correct record from the dal", async () => {
@@ -112,5 +106,35 @@ describe("collection dal", () => {
 
       expect(result).toEqual(mockItemBase);
     });
+  });
+
+  describe("delete record", () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it("should delete an existing record from the db", async () => {
+      mockDeleteFromDb(db, mockItemBase);
+      vi.spyOn(db.update(items), "set");
+
+      const result = await deleteItem(itemId);
+
+      expect(result).toEqual(mockItemBase);
+      expect(db.update(items).set({}).where).toHaveBeenCalledExactlyOnceWith(eq(items.id, itemId));
+    });
+  });
+
+  it("should set the updated value of the record to the current timestamp", async () => {
+    mockDeleteFromDb(db, mockItemBase);
+    const date = new Date(2000, 1, 1, 13);
+    vi.setSystemTime(date);
+
+    await deleteItem(itemId);
+
+    expect(db.update(items).set).toHaveBeenCalledExactlyOnceWith({ deletedAt: date });
   });
 });

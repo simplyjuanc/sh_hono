@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq, isNotNull } from "drizzle-orm";
 
 import type { InferItemInsert, InferItemSelect } from "@/db/schema/items.table";
 import type { Item } from "@/models/item";
@@ -6,6 +6,7 @@ import type { Item } from "@/models/item";
 import drizzleDb from "@/db";
 import { items } from "@/db/schema";
 import { DatabaseError, EntityNotFoundError } from "@/models/errors/dal-errors";
+import { itemSchema } from "@/models/item";
 
 const DEFAULT_CONDITION = "UNKNOWN" as const;
 
@@ -27,7 +28,12 @@ export async function getUserRecords(userId: string, db = drizzleDb): Promise<It
     const userCollection = await db
       .select()
       .from(items)
-      .where(eq(items.ownerId, userId));
+      .where(
+        and(
+          eq(items.ownerId, userId),
+          isNotNull(items.deletedAt),
+        ),
+      );
 
     return userCollection.map(mapToItemDto);
   }
@@ -50,6 +56,16 @@ export async function createItem(newItem: InferItemInsert, db = drizzleDb): Prom
     throw new DatabaseError(`Could not create item '${newItem.title}'`);
   }
   return mapToItemDto(createdItem);
+}
+
+export async function deleteItem(id: string, db = drizzleDb): Promise<Item> {
+  const [deletedItem] = await db
+    .update(items)
+    .set({ deletedAt: new Date() })
+    .where(eq(items.id, id))
+    .returning();
+
+  return itemSchema.parse(deletedItem);
 }
 
 function mapToItemDto(item: InferItemSelect): Item {
