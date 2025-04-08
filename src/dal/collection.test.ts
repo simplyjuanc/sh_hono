@@ -1,5 +1,5 @@
 import { and, eq, isNotNull } from "drizzle-orm";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { Item } from "@/models/item";
 
@@ -109,6 +109,14 @@ describe("collection dal", () => {
   });
 
   describe("delete record", () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
     it("should delete an existing record from the db", async () => {
       mockDeleteFromDb(db, mockItemBase);
       vi.spyOn(db.update(items), "set");
@@ -118,5 +126,15 @@ describe("collection dal", () => {
       expect(result).toEqual(mockItemBase);
       expect(db.update(items).set({}).where).toHaveBeenCalledExactlyOnceWith(eq(items.id, itemId));
     });
+  });
+
+  it("should set the updated value of the record to the current timestamp", async () => {
+    mockDeleteFromDb(db, mockItemBase);
+    const date = new Date(2000, 1, 1, 13);
+    vi.setSystemTime(date);
+
+    await deleteItem(itemId);
+
+    expect(db.update(items).set).toHaveBeenCalledExactlyOnceWith({ deletedAt: date });
   });
 });
