@@ -1,14 +1,12 @@
 import { and, eq, isNotNull } from "drizzle-orm";
 
-import type { InferItemInsert, InferItemSelect } from "@/db/schema/items.table";
+import type { InferItemInsert } from "@/db/schema/items.table";
 import type { Item } from "@/models/item";
 
 import drizzleDb from "@/db";
 import { items } from "@/db/schema";
 import { DatabaseError, EntityNotFoundError } from "@/models/errors/dal-errors";
 import { itemSchema } from "@/models/item";
-
-const DEFAULT_CONDITION = "UNKNOWN" as const;
 
 export async function getRecordById(id: string, db = drizzleDb): Promise<Item> {
   const item = await db
@@ -20,7 +18,7 @@ export async function getRecordById(id: string, db = drizzleDb): Promise<Item> {
   if (!item) {
     throw new EntityNotFoundError("Item", id);
   }
-  return mapToItemDto(item);
+  return itemSchema.parse(item);
 }
 
 export async function getUserRecords(userId: string, db = drizzleDb): Promise<Item[]> {
@@ -35,7 +33,7 @@ export async function getUserRecords(userId: string, db = drizzleDb): Promise<It
         ),
       );
 
-    return userCollection.map(mapToItemDto);
+    return userCollection.map(record => itemSchema.parse(record));
   }
   catch {
     throw new DatabaseError(`Failed to fetch records for user ${userId}`);
@@ -55,7 +53,7 @@ export async function createItem(newItem: InferItemInsert, db = drizzleDb): Prom
   if (!createdItem) {
     throw new DatabaseError(`Could not create item '${newItem.title}'`);
   }
-  return mapToItemDto(createdItem);
+  return itemSchema.parse(createdItem);
 }
 
 export async function deleteItem(id: string, db = drizzleDb): Promise<Item> {
@@ -66,12 +64,4 @@ export async function deleteItem(id: string, db = drizzleDb): Promise<Item> {
     .returning();
 
   return itemSchema.parse(deletedItem);
-}
-
-function mapToItemDto(item: InferItemSelect): Item {
-  return {
-    ...item,
-    price: Number(item.price),
-    condition: item.condition ?? DEFAULT_CONDITION,
-  };
 }

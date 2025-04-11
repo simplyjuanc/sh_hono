@@ -108,7 +108,7 @@ describe("collection dal", () => {
     });
   });
 
-  describe("delete record", () => {
+  describe("deleteItem", () => {
     beforeEach(() => {
       vi.useFakeTimers();
     });
@@ -126,15 +126,15 @@ describe("collection dal", () => {
       expect(result).toEqual(mockItemBase);
       expect(db.update(items).set({}).where).toHaveBeenCalledExactlyOnceWith(eq(items.id, itemId));
     });
-  });
 
-  it("should set the updated value of the record to the current timestamp", async () => {
-    mockDeleteFromDb(db, mockItemBase);
-    const date = new Date(2000, 1, 1, 13);
-    vi.setSystemTime(date);
+    it("should set the updated value of the record to the current timestamp", async () => {
+      mockDeleteFromDb(db, mockItemBase);
+      const date = new Date(2000, 1, 1, 13);
+      vi.setSystemTime(date);
 
-    await deleteItem(itemId);
+      await deleteItem(itemId);
 
-    expect(db.update(items).set).toHaveBeenCalledExactlyOnceWith({ deletedAt: date });
+      expect(db.update(items).set).toHaveBeenCalledExactlyOnceWith({ deletedAt: date });
+    });
   });
 });
